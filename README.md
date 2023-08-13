@@ -19,3 +19,7 @@ pip install kivymd
 
 Documentações consultadas:
 kivy: https://kivy.org/doc/stable-1.10.1/installation/installation-windows.html
+
+
+To-do:
+Ajustar logs de reconhecimento por cada camera.
