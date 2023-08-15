@@ -2,7 +2,6 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.image import Image
 from kivy.uix.button import Button
-from kivy.uix.label import Label
 from kivy.core.window import Window
 from kivy.clock import Clock
 import cv2
@@ -10,20 +9,19 @@ from kivy.graphics.texture import Texture
 import face_recognition
 import os
 
-# Widget personalizado para exibir a imagem da câmera
 class CameraLabel(BoxLayout):
-    def __init__(self, camera_index, known_faces, known_names, log_label, **kwargs):
+    def __init__(self, camera_index, known_faces, known_names, **kwargs):
         super().__init__(**kwargs)
         self.camera_index = camera_index
-        self.known_faces = known_faces  # Lista de faces conhecidas
-        self.known_names = known_names  # Lista de nomes correspondentes
-        self.log_label = log_label
+        self.known_faces = known_faces
+        self.known_names = known_names
+        self.detected_people = {}  # Dictionary to track detected people
 
         self.capture = cv2.VideoCapture(camera_index)
         self.image = Image(source='Imagens/no_camera.png')
         self.add_widget(self.image)
 
-        Clock.schedule_interval(self.update, 0/30.0)  # Atualiza os frames em 1/30 segundos mais próximo de zero maior desempenho
+        Clock.schedule_interval(self.update, 0 / 30.0)
 
     def update(self, dt):
         ret, frame = self.capture.read()
@@ -32,20 +30,28 @@ class CameraLabel(BoxLayout):
             texture = Texture.create(size=(frame.shape[1], frame.shape[0]), colorfmt='bgr')
             texture.blit_buffer(buffer, colorfmt='bgr', bufferfmt='ubyte')
 
-            # Realize o reconhecimento facial no frame capturado
             face_locations = face_recognition.face_locations(frame)
             face_encodings = face_recognition.face_encodings(frame, face_locations)
+
+            newly_detected_people = set()
 
             for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
                 matches = face_recognition.compare_faces(self.known_faces, face_encoding)
                 if any(matches):
                     face_index = matches.index(True)
                     person_name = self.known_names[face_index]
-                    self.log_label.text = f"Face reconhecida: {person_name}"
+                    newly_detected_people.add(person_name)
+                    if person_name not in self.detected_people:
+                        print(f"Face reconhecida na câmera {self.camera_index + 1}: {person_name}")
                     cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
                 else:
-                    self.log_label.text = "Não existe face reconhecida"
                     cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
+
+            exited_people = set(self.detected_people.keys()) - newly_detected_people
+            for person_name in exited_people:
+                print(f"{person_name} saiu do alcance da câmera {self.camera_index + 1}")
+
+            self.detected_people = {person_name: (top, right, bottom, left) for (top, right, bottom, left), person_name in zip(face_locations, newly_detected_people)}
 
             self.image.texture = texture
         else:
@@ -54,22 +60,17 @@ class CameraLabel(BoxLayout):
     def on_stop(self):
         self.capture.release()
 
-
 class CamerasApp(App):
     def build(self):
-        # Configurações da Janela
         self.title = 'Monitoramento Multicamera'
         self.icon = 'Imagens/icone_camera.png'
         Window.maximize()
 
-        # Lista de faces conhecidas
         known_faces = []
         known_names = []
 
-        # Caminho para o Banco de Faces
         known_faces_folder = "Pessoas"
 
-        # Percorra a pasta e calcule as representações faciais para cada imagem
         for filename in os.listdir(known_faces_folder):
             if filename.endswith(".jpg") or filename.endswith(".png"):
                 image_path = os.path.join(known_faces_folder, filename)
@@ -79,49 +80,32 @@ class CamerasApp(App):
                 person_name = os.path.splitext(filename)[0]
                 known_names.append(person_name)
 
-        # Layout principal com três colunas
         main_layout = BoxLayout(orientation='horizontal', spacing=10)
 
-        # Layout secundário para a coluna de câmeras à esquerda
         cameras_layout = BoxLayout(orientation='vertical', spacing=10)
 
-        # Layout secundário para a primeira linha de câmeras
-        first_column_layout = BoxLayout(orientation='horizontal', spacing=10)
+        first_row_layout = BoxLayout(orientation='horizontal', spacing=10)
+        second_row_layout = BoxLayout(orientation='horizontal', spacing=10)
 
-        # Label de logs
-        self.log_label = Label(text='', size_hint_y=None, height=30)
-        first_column_layout.add_widget(self.log_label)
-
-        # Adicionar as labels das câmeras para a primeira linha
         for camera_index in range(2):
-            first_column_layout.add_widget(CameraLabel(camera_index, known_faces, known_names, self.log_label))
+            camera_widget = CameraLabel(camera_index, known_faces, known_names)
+            first_row_layout.add_widget(camera_widget)
 
-        cameras_layout.add_widget(first_column_layout)
+        for camera_index in range(2, 4):
+            camera_widget = CameraLabel(camera_index, known_faces, known_names)
+            second_row_layout.add_widget(camera_widget)
 
-        # Layout secundário para a segunda linha de câmeras
-        second_column_layout = BoxLayout(orientation='horizontal', spacing=10)
-
-        # Adicionar as labels das câmeras para a segunda linha
-        for camera_index in range(2, 4):  # Altere para o número correto de câmeras na segunda linha
-            second_column_layout.add_widget(CameraLabel(camera_index, known_faces, known_names, self.log_label))
-
-        cameras_layout.add_widget(second_column_layout)
+        cameras_layout.add_widget(first_row_layout)
+        cameras_layout.add_widget(second_row_layout)
 
         main_layout.add_widget(cameras_layout)
 
-        # Layout secundário para a coluna de botões à direita
         right_layout = BoxLayout(orientation='vertical', spacing=10)
 
-        # Label de logs
-        self.log_label = Label(text='', size_hint_y=None, height=30)
-        right_layout.add_widget(self.log_label)
-
-        # Botão para atualizar as câmeras
         refresh_button = Button(text='Refresh das Câmeras')
         refresh_button.bind(on_press=self.refresh_cameras)
         right_layout.add_widget(refresh_button)
 
-        # Adicionar os demais botões ao layout à direita
         for i in range(4):
             button = Button(text=f'Botão {i+2}')
             right_layout.add_widget(button)
@@ -131,21 +115,14 @@ class CamerasApp(App):
         return main_layout
 
     def refresh_cameras(self, instance):
-        # Limpar as câmeras existentes
         cameras_layout = self.root.children[0]
-        for column_layout in cameras_layout.children:
-            for camera_widget in column_layout.children:
+        for row_layout in cameras_layout.children:
+            for camera_widget in row_layout.children:
                 if isinstance(camera_widget, CameraLabel):
                     camera_widget.on_stop()
-                    column_layout.remove_widget(camera_widget)
-
-        # Recriar os widgets de câmeras e adicioná-los novamente
-        for camera_index in range(4):
-            if camera_index < 2:
-                column_layout = cameras_layout.children[0]
-            else:
-                column_layout = cameras_layout.children[1]
-            column_layout.add_widget(CameraLabel(camera_index, known_faces, known_names, self.log_label))
+                    row_layout.remove_widget(camera_widget)
+                    camera_widget = CameraLabel(camera_widget.camera_index, known_faces, known_names)
+                    row_layout.add_widget(camera_widget)
 
 if __name__ == '__main__':
     CamerasApp().run()
