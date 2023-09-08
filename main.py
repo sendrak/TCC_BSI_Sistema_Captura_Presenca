@@ -21,6 +21,10 @@ class MainMenu(BoxLayout):
         button3.bind(on_release=self.open_app3)
         self.add_widget(button3)
 
+        button4 = Button(text="Controle de Presença")
+        button4.bind(on_release=self.open_app4)
+        self.add_widget(button4)
+
     def open_app1(self, instance):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -43,6 +47,15 @@ class MainMenu(BoxLayout):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
             app1_path = os.path.join(current_directory, 'modulo_banco_de_dados.py')
+            # print("Abrindo:", app1_path)
+            subprocess.Popen(['python', app1_path])
+        except Exception as e:
+            print(f"Erro ao abrir a aplicação: {e}")
+
+    def open_app4(self, instance):
+        try:
+            current_directory = os.path.dirname(os.path.abspath(__file__))
+            app1_path = os.path.join(current_directory, 'modulo_presenca.py')
             # print("Abrindo:", app1_path)
             subprocess.Popen(['python', app1_path])
         except Exception as e:
