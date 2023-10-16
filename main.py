@@ -1,6 +1,8 @@
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
+from kivy.uix.image import Image
+
 import os
 import subprocess
 
@@ -10,25 +12,36 @@ class MainMenu(BoxLayout):
         self.orientation = 'vertical'
         self.processes = []  # Lista para rastrear subprocessos
 
-        button1 = Button(text="Monitoramento Multicâmeras")
+        # Crie um BoxLayout para a imagem e os botões
+        container = BoxLayout(orientation='vertical')
+
+        # Adicione um widget de imagem no topo
+        image = Image(source="Imagens/logo_iff_campus_centro.png", size_hint=(None, None), size=(303, 83))
+        container.add_widget(image)
+
+        # Botões com tamanho fixo
+        button1 = Button(text="Monitoramento Multicâmeras", size_hint=(None, None), size=(200, 50))
         button1.bind(on_release=self.open_app1)
-        self.add_widget(button1)
+        container.add_widget(button1)
 
-        button2 = Button(text="Cadastro de Alunos")
+        button2 = Button(text="Cadastro de Alunos", size_hint=(None, None), size=(200, 50))
         button2.bind(on_release=self.open_app2)
-        self.add_widget(button2)
+        container.add_widget(button2)
 
-        button3 = Button(text="Banco de Dados")
+        button3 = Button(text="Banco de Dados", size_hint=(None, None), size=(200, 50))
         button3.bind(on_release=self.open_app3)
-        self.add_widget(button3)
+        container.add_widget(button3)
 
-        button4 = Button(text="Controle de Presença")
+        button4 = Button(text="Controle de Presença", size_hint=(None, None), size=(200, 50))
         button4.bind(on_release=self.open_app4)
-        self.add_widget(button4)
+        container.add_widget(button4)
 
-        button5 = Button(text="Fechar")
+        button5 = Button(text="Fechar", size_hint=(None, None), size=(200, 50))
         button5.bind(on_release=self.close_all_apps)
-        self.add_widget(button5)
+        container.add_widget(button5)
+
+        # Adicione o BoxLayout com a imagem e os botões ao MainMenu
+        self.add_widget(container)
 
     def open_app1(self, instance):
         try:
