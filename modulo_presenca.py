@@ -5,22 +5,33 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.image import Image
+from kivy.uix.label import Label
 from kivy.graphics.texture import Texture
 from kivy.clock import Clock
+from datetime import datetime
 
 class PresenceCaptureApp(App):
     def build(self):
         # Layout principal com duas colunas
         layout = BoxLayout(orientation='horizontal', spacing=10)
 
-        # Coluna 1: Visualização da câmera
+        # Coluna 1: Visualização da câmera e captura
         self.camera = Image()
         layout.add_widget(self.camera)
 
         # Coluna 2: Campos de texto e botões
         col2_layout = BoxLayout(orientation='vertical', spacing=10)
 
-        # Campos de texto
+        # Labels para as opções na coluna à direita
+        label_date = Label(text='Data:')
+        label_text_input1 = Label(text='Curso:')
+        label_text_input2 = Label(text='Disciplina:')
+
+        # Data de Hoje dinâmicamente do sistema, pode ser alterada como texto
+        data_de_hoje = datetime.now().strftime('%Y-%m-d')
+        date_input = TextInput(hint_text='Data', text=data_de_hoje)
+
+        # Campos de texto existentes
         text_input1 = TextInput(hint_text='Curso')
         text_input2 = TextInput(hint_text='Disciplina')
 
@@ -32,8 +43,12 @@ class PresenceCaptureApp(App):
         close_button = Button(text='Fechar Presença')
         close_button.bind(on_press=self.close_presence)
 
-        # Adicionar widgets à coluna 2
+        # Adição dos widgets à coluna 2
+        col2_layout.add_widget(label_date)
+        col2_layout.add_widget(date_input)
+        col2_layout.add_widget(label_text_input1)
         col2_layout.add_widget(text_input1)
+        col2_layout.add_widget(label_text_input2)
         col2_layout.add_widget(text_input2)
         col2_layout.add_widget(start_button)
         col2_layout.add_widget(close_button)
@@ -87,7 +102,8 @@ class PresenceCaptureApp(App):
             for person_name in exited_people:
                 print(f"{person_name} saiu do alcance da câmera")
 
-            self.detected_people = {person_name: (top, right, bottom, left) for (top, right, bottom, left), person_name in zip(face_locations, newly_detected_people)}
+            self.detected_people = {person_name: (top, right, bottom, left) for (top, right, bottom, left), person_name
+                                    in zip(face_locations, newly_detected_people)}
 
             # Atualize a textura da câmera existente
             buffer = cv2.flip(frame, 0).tobytes()
