@@ -14,12 +14,10 @@ Face Recognition: pip install face_recognition
 OpenCV: pip install opencv-python
 
 Kivy: pip install kivy
-
 pip install kivymd
+
+Manipulação de Excel:
+pip install openpyxl
 
 Documentações consultadas:
 kivy: https://kivy.org/doc/stable-1.10.1/installation/installation-windows.html
-
-
-To-do:
-Ajustar logs de reconhecimento por cada camera.
