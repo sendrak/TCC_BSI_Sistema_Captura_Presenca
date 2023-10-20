@@ -11,7 +11,8 @@ from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.textinput import TextInput
 from openpyxl import Workbook
-import openpyxl
+
+import face_recognition
 
 class ImageChooserApp(App):
     def build(self):
@@ -77,26 +78,13 @@ class ImageChooserApp(App):
         # Diretório de imagens das pessoas registradas
         people_dir = "Pessoas"
 
-        # Reconhecimento facial (utilize uma biblioteca de reconhecimento facial apropriada)
-        recognized_people = self.recognize_people(people_dir)
+        # Carregar imagens das pessoas registradas
+        known_faces, known_names = self.load_known_faces(people_dir)
 
-        # Preencha o Excel com base no reconhecimento facial
-        row_index = 2
-        for person in recognized_people:
-            person = person.replace(".png", "")
-            nome_matricula = person.split("_")
-            nome = nome_matricula[0]
-            matricula = nome_matricula[1]
-
-            sheet.cell(row=row_index, column=1, value=nome)
-            sheet.cell(row=row_index, column=2, value=matricula)
-            sheet.cell(row=row_index, column=3, value="PRESENTE")
-            row_index += 1
-
-        # Defina pessoas ausentes
+        # Defina todas as pessoas como "AUSENTE" inicialmente
         all_people = [os.path.splitext(filename)[0] for filename in os.listdir(people_dir)]
-        missing_people = list(set(all_people) - set([person[0] for person in recognized_people]))
-        for person in missing_people:
+        row_index = 2
+        for person in all_people:
             person = person.replace(".png", "")
             nome_matricula = person.split("_")
             nome = nome_matricula[0]
@@ -106,20 +94,62 @@ class ImageChooserApp(App):
             sheet.cell(row=row_index, column=3, value="AUSENTE")
             row_index += 1
 
+        # Faces reconhecidas na imagem selecionada
+        recognized_people = self.get_pessoas_presentes(self.image.source, known_faces, known_names)
+
+        # Marque as pessoas reconhecidas como "PRESENTE"
+        for person in recognized_people:
+            person = person.replace(".png", "")
+            nome_matricula = person.split("_")
+            nome = nome_matricula[0]
+            matricula = nome_matricula[1]
+            sheet.cell(row=row_index, column=1, value=nome)
+            sheet.cell(row=row_index, column=2, value=matricula)
+            sheet.cell(row=row_index, column=3, value="PRESENTE")
+            row_index += 1
+
         # Salvando o arquivo Excel no diretório designado
         app_root_dir = os.path.dirname(os.path.abspath(__file__))
         save_dir = os.path.join(app_root_dir, "ListaPresencas")
-        os.makedirs(save_dir, exist_ok=True)  # Cria o diretório se ele não existir
+        os.makedirs(save_dir, exist_ok=True)  # Crie o diretório se ele não existir
 
         file_path = os.path.join(save_dir, filename)
         workbook.save(file_path)
 
         self.show_info_popup(f'Arquivo de presença "{filename}" \nfoi gerado com sucesso na Pasta.')
 
-    def recognize_people(self, people_dir):
-        # Implemente o reconhecimento facial aqui e retorne uma lista de pessoas reconhecidas
+    def load_known_faces(self, people_dir):
+        known_faces = []
+        known_names = []
+
+        for person_filename in os.listdir(people_dir):
+            person_path = os.path.join(people_dir, person_filename)
+            if person_filename.endswith(('.png', '.jpg', '.jpeg')):
+                image = face_recognition.load_image_file(person_path)
+                encoding = face_recognition.face_encodings(image)[0]  # Assumindo um único rosto na imagem
+                known_faces.append(encoding)
+                known_names.append(os.path.splitext(person_filename)[0])
+
+        return known_faces, known_names
+
+    def get_pessoas_presentes(self, image_path, known_faces, known_names):
+        # Carregue a imagem selecionada
+        image = face_recognition.load_image_file(image_path)
+
+        # Encontre rostos na imagem
+        face_locations = face_recognition.face_locations(image)
+        face_encodings = face_recognition.face_encodings(image, face_locations)
+
         recognized_people = []
-        # Implemente o reconhecimento facial aqui e adicione as pessoas reconhecidas à lista
+
+        for face_encoding in face_encodings:
+            # Compare a face com as imagens das pessoas registradas
+            matches = face_recognition.compare_faces(known_faces, face_encoding)
+            if any(matches):
+                face_index = matches.index(True)
+                person_name = known_names[face_index]
+                recognized_people.append(person_name)
+
         return recognized_people
 
     def show_error_popup(self, message):
