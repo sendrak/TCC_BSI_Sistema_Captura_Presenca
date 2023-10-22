@@ -18,26 +18,30 @@ class MainMenu(BoxLayout):
         image = Image(source="Imagens/logo_iff_campus_centro.png")
         container_central.add_widget(image)
 
-        # Botões com tamanho fixo
-        button1 = Button(text="Monitoramento Multicâmeras", size=(200, 50))
-        button1.bind(on_release=self.open_app1)
-        container_central.add_widget(button1)
+        # Botões de monitoramento desativado
+        # button1 = Button(text="Monitoramento Multicâmeras", size=(200, 50))
+        # button1.bind(on_release=self.open_app1)
+        # container_central.add_widget(button1)
 
-        button2 = Button(text="Cadastro de Alunos", size=(200, 50))
-        button2.bind(on_release=self.open_app2)
-        container_central.add_widget(button2)
+        button_cadastro_alunos = Button(text="Cadastro de Alunos", size=(200, 50))
+        button_cadastro_alunos.bind(on_release=self.open_cadastro)
+        container_central.add_widget(button_cadastro_alunos)
 
-        button3 = Button(text="Banco de Dados", size=(200, 50))
-        button3.bind(on_release=self.open_app3)
-        container_central.add_widget(button3)
+        button_banco_de_dados = Button(text="Banco de Dados", size=(200, 50))
+        button_banco_de_dados.bind(on_release=self.open_database)
+        container_central.add_widget(button_banco_de_dados)
 
-        button4 = Button(text="Captura de Presença - Tempo Real", size=(200, 50))
-        button4.bind(on_release=self.open_app4)
-        container_central.add_widget(button4)
+        button_captura_video = Button(text="Captura de Presença - Tempo Real", size=(200, 50))
+        button_captura_video.bind(on_release=self.open_captura_video)
+        container_central.add_widget(button_captura_video)
 
-        button5 = Button(text="Captura Presença - Imagem", size=(200, 50))
-        button5.bind(on_release=self.open_app5)
-        container_central.add_widget(button5)
+        button_captura_imagem = Button(text="Captura Presença - Imagem", size=(200, 50))
+        button_captura_imagem.bind(on_release=self.open_captura_imagem)
+        container_central.add_widget(button_captura_imagem)
+
+        button_config = Button(text="Configurações", size=(200, 50))
+        button_config.bind(on_release=self.open_config)
+        container_central.add_widget(button_config)
 
         button_close = Button(text="Fechar Aplicação", size=(200, 50))
         button_close.bind(on_release=self.close_apps)
@@ -49,49 +53,59 @@ class MainMenu(BoxLayout):
     def open_app1(self, instance):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
-            app1_path = os.path.join(current_directory, 'modulo_monitoramento.py')
-            print("Abrindo:", app1_path)
-            process = subprocess.Popen(['python', app1_path])
+            app_path = os.path.join(current_directory, 'modulo_monitoramento.py')
+            print("Abrindo:", app_path)
+            process = subprocess.Popen(['python', app_path])
             self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
         except Exception as e:
             print(f"Erro ao abrir a aplicação: {e}")
 
-    def open_app2(self, instance):
+    def open_cadastro(self, instance):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
-            app2_path = os.path.join(current_directory, 'modulo_cadastro.py')
-            print("Abrindo:", app2_path)
-            process = subprocess.Popen(['python', app2_path])
+            app_path = os.path.join(current_directory, 'modulo_cadastro.py')
+            print("Abrindo:", app_path)
+            process = subprocess.Popen(['python', app_path])
             self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
         except Exception as e:
             print(f"Erro ao abrir a aplicação: {e}")
 
-    def open_app3(self, instance):
+    def open_database(self, instance):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
-            app3_path = os.path.join(current_directory, 'modulo_banco_de_dados.py')
-            print("Abrindo:", app3_path)
-            process = subprocess.Popen(['python', app3_path])
+            app_path = os.path.join(current_directory, 'modulo_banco_de_dados.py')
+            print("Abrindo:", app_path)
+            process = subprocess.Popen(['python', app_path])
             self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
         except Exception as e:
             print(f"Erro ao abrir a aplicação: {e}")
 
-    def open_app4(self, instance):
+    def open_captura_video(self, instance):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
-            app4_path = os.path.join(current_directory, 'modulo_presenca.py')
-            print("Abrindo:", app4_path)
-            process = subprocess.Popen(['python', app4_path])
+            app_path = os.path.join(current_directory, 'modulo_presenca.py')
+            print("Abrindo:", app_path)
+            process = subprocess.Popen(['python', app_path])
             self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
         except Exception as e:
             print(f"Erro ao abrir a aplicação: {e}")
 
-    def open_app5(self, instance):
+    def open_captura_imagem(self, instance):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
-            app4_path = os.path.join(current_directory, 'modulo_presenca_imagem.py')
-            print("Abrindo:", app4_path)
-            process = subprocess.Popen(['python', app4_path])
+            app_path = os.path.join(current_directory, 'modulo_presenca_imagem.py')
+            print("Abrindo:", app_path)
+            process = subprocess.Popen(['python', app_path])
+            self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
+        except Exception as e:
+            print(f"Erro ao abrir a aplicação: {e}")
+
+    def open_config(self, instance):
+        try:
+            current_directory = os.path.dirname(os.path.abspath(__file__))
+            app_path = os.path.join(current_directory, 'config.py')
+            print("Abrindo:", app_path)
+            process = subprocess.Popen(['python', app_path])
             self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
         except Exception as e:
             print(f"Erro ao abrir a aplicação: {e}")
@@ -104,7 +118,7 @@ class MainMenu(BoxLayout):
 
 class MainApp(App):
     def build(self):
-        self.title = 'Captura de Presença'
+        self.title = 'IntitutoCaptura de Presença'
         self.icon = 'Imagens/icone_camera.png'
         return MainMenu()
 
