@@ -14,8 +14,10 @@ from openpyxl import Workbook
 
 import face_recognition
 
-class ImageChooserApp(App):
+class CapturaPresencaImagem(App):
     def build(self):
+        self.title = 'Gerar Presença por Imagem'
+        self.icon = 'Imagens/icone_camera.png'
         self.image = Image(source='Imagens/selecione_imagem.png')
         left_column = BoxLayout(orientation='vertical', spacing=10)
         left_column.add_widget(self.image)
@@ -171,4 +173,4 @@ class ImageChooserApp(App):
         App.get_running_app().stop()
 
 if __name__ == '__main__':
-    ImageChooserApp().run()
+    CapturaPresencaImagem().run()

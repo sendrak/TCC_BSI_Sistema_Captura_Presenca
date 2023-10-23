@@ -31,13 +31,21 @@ class MainMenu(BoxLayout):
         button_banco_de_dados.bind(on_release=self.open_database)
         container_central.add_widget(button_banco_de_dados)
 
-        button_captura_video = Button(text="Captura de Presença - Tempo Real", size=(200, 50))
+        button_captura_video = Button(text="Captura de Presença em Tempo Real", size=(200, 50))
         button_captura_video.bind(on_release=self.open_captura_video)
         container_central.add_widget(button_captura_video)
 
-        button_captura_imagem = Button(text="Captura Presença - Imagem", size=(200, 50))
+        # Botão duplo em linha
+        container_presenca_imagem = BoxLayout(orientation='horizontal', spacing=5)
+        button_captura_imagem_turma = Button(text="Captura de Imagem da Turma", size=(200, 50))
+        button_captura_imagem_turma.bind(on_release=self.open_captura_imagem_turma)
+        container_presenca_imagem.add_widget(button_captura_imagem_turma)
+
+        button_captura_imagem = Button(text="Captura Presença por Imagem da Turma", size=(200, 50))
         button_captura_imagem.bind(on_release=self.open_captura_imagem)
-        container_central.add_widget(button_captura_imagem)
+        container_presenca_imagem.add_widget(button_captura_imagem)
+
+        container_central.add_widget(container_presenca_imagem)
 
         button_config = Button(text="Configurações", size=(200, 50))
         button_config.bind(on_release=self.open_config)
@@ -90,6 +98,16 @@ class MainMenu(BoxLayout):
         except Exception as e:
             print(f"Erro ao abrir a aplicação: {e}")
 
+    def open_captura_imagem_turma(self, instance):
+        try:
+            current_directory = os.path.dirname(os.path.abspath(__file__))
+            app_path = os.path.join(current_directory, 'modulo_captura_imagem.py')
+            print("Abrindo:", app_path)
+            process = subprocess.Popen(['python', app_path])
+            self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
+        except Exception as e:
+            print(f"Erro ao abrir a aplicação: {e}")
+
     def open_captura_imagem(self, instance):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
@@ -119,7 +137,7 @@ class MainMenu(BoxLayout):
 
 class MainApp(App):
     def build(self):
-        self.title = 'IntitutoCaptura de Presença'
+        self.title = 'Instituto Federal Fluminense - Captura de Presença'
         self.icon = 'Imagens/icone_camera.png'
         return MainMenu()
 

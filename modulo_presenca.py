@@ -10,8 +10,12 @@ from kivy.graphics.texture import Texture
 from kivy.clock import Clock
 from datetime import datetime
 
+
 class PresenceCaptureApp(App):
     def build(self):
+        self.title = 'Instituto Federal Fluminense - Captura de Presença'
+        self.icon = 'Imagens/icone_camera.png'
+
         # Layout principal com duas colunas
         layout = BoxLayout(orientation='horizontal', spacing=10)
 
@@ -112,6 +116,7 @@ class PresenceCaptureApp(App):
             self.camera.texture = texture
         else:
             self.camera.source = 'Imagens/no_camera.png'
+
 
 if __name__ == '__main__':
     PresenceCaptureApp().run()

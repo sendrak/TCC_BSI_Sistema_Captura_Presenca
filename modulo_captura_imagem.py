@@ -9,6 +9,7 @@ from kivy.uix.image import Image
 from kivy.core.window import Window
 from kivy.uix.camera import Camera
 import os
+from datetime import datetime
 
 class ConteudoCadastroPessoas(BoxLayout):
     def __init__(self, **kwargs):
@@ -27,11 +28,13 @@ class ConteudoCadastroPessoas(BoxLayout):
         self.toggle_button.bind(on_press=self.alternar_camera)
         self.container_direita.add_widget(self.toggle_button)
 
-        self.name_input = TextInput(size_hint_y=None, height='48dp', hint_text='Nome da pessoa')
-        self.container_direita.add_widget(self.name_input)
+        self.curso_input = TextInput(size_hint_y=None, height='48dp', hint_text='Curso')
+        self.container_direita.add_widget(self.curso_input)
 
-        self.matricula_input = TextInput(size_hint_y=None, height='48dp', hint_text='Matrícula')
-        self.container_direita.add_widget(self.matricula_input)
+        # Pega a data de hoje
+        data_atual = datetime.now().strftime('%Y-%m-%d')
+        self.data_input = TextInput(size_hint_y=None, height='48dp', hint_text='Data', text=data_atual)
+        self.container_direita.add_widget(self.data_input)
 
         self.capturar_button = Button(text='Capturar', size_hint_y=None, height='48dp')
         self.capturar_button.bind(on_press=self.capture)
@@ -43,14 +46,14 @@ class ConteudoCadastroPessoas(BoxLayout):
 
         self.add_widget(self.container_direita)
 
-        self.caminho_salvar = "./Pessoas"  # Local de salvamento das imagens
+        self.caminho_salvar = "./ImagensParaPresenca"  # Local de salvamento das imagens
 
     def alternar_camera(self, instance):
         self.camera.play = not self.camera.play
 
     def capture(self, instance):
-        name = self.name_input.text.strip()
-        matricula = self.matricula_input.text.strip()
+        name = self.curso_input.text.strip()
+        matricula = self.data_input.text.strip()
         if not name or not matricula:
             print("Por favor, preencha o nome e a matrícula da pessoa antes de capturar.")
             return
@@ -89,7 +92,7 @@ class ConteudoCadastroPessoas(BoxLayout):
 class CadastroDePessoasApp(App):
     def build(self):
         Window.maximize()
-        self.title = 'Cadastro de Alunos'
+        self.title = 'Captura de Imagem da Turma'
         self.icon = 'Imagens/icone_camera.png'
         return ConteudoCadastroPessoas()
 

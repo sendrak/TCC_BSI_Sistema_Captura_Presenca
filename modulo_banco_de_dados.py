@@ -66,6 +66,7 @@ Builder.load_string('''
         id: ok_button
 ''')
 
+
 class DeleteConfirmationContent(BoxLayout):
     current_image = StringProperty("")  # Adicione essa propriedade
     current_filename = StringProperty("")  # Adicione essa propriedade
@@ -74,6 +75,7 @@ class DeleteConfirmationContent(BoxLayout):
         super(DeleteConfirmationContent, self).__init__(**kwargs)
         self.ids.delete_image_view.source = self.current_image
         self.ids.delete_image_name_label.text = self.current_filename
+
 
 class NoImagesContent(BoxLayout):
     pass
@@ -159,6 +161,7 @@ class VisualizadorImagensApp(App):
         self.title = 'Banco de Imagens'
         self.icon = 'Imagens/icone_camera.png'
         return VisualizadorImagens()
+
 
 if __name__ == '__main__':
     VisualizadorImagensApp().run()
