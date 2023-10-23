@@ -2,9 +2,9 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.image import Image
-
 import os
 import subprocess
+
 
 class MainMenu(BoxLayout):
     def __init__(self, **kwargs):
@@ -19,9 +19,9 @@ class MainMenu(BoxLayout):
         container_central.add_widget(image)
 
         # Botões de monitoramento desativado
-        # button1 = Button(text="Monitoramento Multicâmeras", size=(200, 50))
-        # button1.bind(on_release=self.open_app1)
-        # container_central.add_widget(button1)
+        # button_monitoramento = Button(text="Monitoramento Multicâmeras", size=(200, 50))
+        # button_monitoramento.bind(on_release=self.open_monitoramento)
+        # container_central.add_widget(button_monitoramento)
 
         button_cadastro_alunos = Button(text="Cadastro de Alunos", size=(200, 50))
         button_cadastro_alunos.bind(on_release=self.open_cadastro)
@@ -50,15 +50,15 @@ class MainMenu(BoxLayout):
         # Adicione o BoxLayout com a imagem e os botões ao MainMenu
         self.add_widget(container_central)
 
-    def open_app1(self, instance):
-        try:
-            current_directory = os.path.dirname(os.path.abspath(__file__))
-            app_path = os.path.join(current_directory, 'modulo_monitoramento.py')
-            print("Abrindo:", app_path)
-            process = subprocess.Popen(['python', app_path])
-            self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
-        except Exception as e:
-            print(f"Erro ao abrir a aplicação: {e}")
+    # def open_monitoramento(self, instance):
+    #     try:
+    #         current_directory = os.path.dirname(os.path.abspath(__file__))
+    #         app_path = os.path.join(current_directory, 'modulo_monitoramento.py')
+    #         print("Abrindo:", app_path)
+    #         process = subprocess.Popen(['python', app_path])
+    #         self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
+    #     except Exception as e:
+    #         print(f"Erro ao abrir a aplicação: {e}")
 
     def open_cadastro(self, instance):
         try:
@@ -116,11 +116,13 @@ class MainMenu(BoxLayout):
             process.terminate()  # Encerra a janela aberta
         App.get_running_app().stop()  # Fecha o aplicativo principal após fechar os subprocessos.
 
+
 class MainApp(App):
     def build(self):
         self.title = 'IntitutoCaptura de Presença'
         self.icon = 'Imagens/icone_camera.png'
         return MainMenu()
+
 
 if __name__ == '__main__':
     MainApp().run()

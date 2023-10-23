@@ -81,36 +81,33 @@ class ImageChooserApp(App):
         # Carregar imagens das pessoas registradas
         known_faces, known_names = self.load_known_faces(people_dir)
 
-        # Defina todas as pessoas como "AUSENTE" inicialmente
+        # Define todas as pessoas como "AUSENTE" inicialmente para preenchimento
         all_people = [os.path.splitext(filename)[0] for filename in os.listdir(people_dir)]
         row_index = 2
+
+        # Faces reconhecidas na imagem selecionada
+        recognized_people = self.get_pessoas_presentes(self.image.source, known_faces, known_names)
+
         for person in all_people:
             person = person.replace(".png", "")
             nome_matricula = person.split("_")
             nome = nome_matricula[0]
             matricula = nome_matricula[1]
+
+            # Verificar se a pessoa está presente e definir o valor correspondente
+            if person in recognized_people:
+                status = "PRESENTE"
+            else:
+                status = "AUSENTE"
+
             sheet.cell(row=row_index, column=1, value=nome)
             sheet.cell(row=row_index, column=2, value=matricula)
-            sheet.cell(row=row_index, column=3, value="AUSENTE")
-            row_index += 1
-
-        # Faces reconhecidas na imagem selecionada
-        recognized_people = self.get_pessoas_presentes(self.image.source, known_faces, known_names)
-
-        # Marque as pessoas reconhecidas como "PRESENTE"
-        for person in recognized_people:
-            person = person.replace(".png", "")
-            nome_matricula = person.split("_")
-            nome = nome_matricula[0]
-            matricula = nome_matricula[1]
-            sheet.cell(row=row_index, column=1, value=nome)
-            sheet.cell(row=row_index, column=2, value=matricula)
-            sheet.cell(row=row_index, column=3, value="PRESENTE")
+            sheet.cell(row=row_index, column=3, value=status)
             row_index += 1
 
         # Salvando o arquivo Excel no diretório designado
         app_root_dir = os.path.dirname(os.path.abspath(__file__))
-        save_dir = os.path.join(app_root_dir, "ListaPresencas")
+        save_dir = os.path.join(app_root_dir, "PresencasCapturadas")
         os.makedirs(save_dir, exist_ok=True)  # Crie o diretório se ele não existir
 
         file_path = os.path.join(save_dir, filename)
