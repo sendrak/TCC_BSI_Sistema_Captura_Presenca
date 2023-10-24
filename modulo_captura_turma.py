@@ -11,6 +11,7 @@ from kivy.uix.camera import Camera
 import os
 from datetime import datetime
 
+
 class ConteudoCadastroPessoas(BoxLayout):
     def __init__(self, **kwargs):
         super(ConteudoCadastroPessoas, self).__init__(**kwargs)
@@ -88,6 +89,7 @@ class ConteudoCadastroPessoas(BoxLayout):
 
     def stop_app(self, instance):
         App.get_running_app().stop()
+
 
 class CadastroDePessoasApp(App):
     def build(self):

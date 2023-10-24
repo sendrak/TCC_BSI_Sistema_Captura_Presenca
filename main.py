@@ -91,7 +91,7 @@ class MainMenu(BoxLayout):
     def open_captura_video(self, instance):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
-            app_path = os.path.join(current_directory, 'modulo_presenca.py')
+            app_path = os.path.join(current_directory, 'modulo_presenca_video.py')
             print("Abrindo:", app_path)
             process = subprocess.Popen(['python', app_path])
             self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
@@ -101,7 +101,7 @@ class MainMenu(BoxLayout):
     def open_captura_imagem_turma(self, instance):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
-            app_path = os.path.join(current_directory, 'modulo_captura_imagem.py')
+            app_path = os.path.join(current_directory, 'modulo_captura_turma.py')
             print("Abrindo:", app_path)
             process = subprocess.Popen(['python', app_path])
             self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
@@ -121,7 +121,7 @@ class MainMenu(BoxLayout):
     def open_config(self, instance):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
-            app_path = os.path.join(current_directory, 'config.py')
+            app_path = os.path.join(current_directory, 'modulo_configuracao.py')
             print("Abrindo:", app_path)
             process = subprocess.Popen(['python', app_path])
             self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
