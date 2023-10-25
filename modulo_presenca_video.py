@@ -90,7 +90,7 @@ class CapturaPresencaVideo(App):
     def start_capture(self, instance):
         user_time_input = int(self.timer_input.text)
         if user_time_input <= 0:
-            # Não permita tempo igual ou menor que zero
+            print("O tempo deve ser um valor inteiro maior que zero")
             return
 
         if self.popup_shown:
