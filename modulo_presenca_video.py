@@ -17,7 +17,7 @@ from openpyxl import Workbook
 import os
 
 
-class PresenceCaptureApp(App):
+class CapturaPresencaVideo(App):
     def build(self):
         self.title = 'Instituto Federal Fluminense - Captura de Presença'
         self.icon = 'Imagens/icone_camera.png'
@@ -101,12 +101,12 @@ class PresenceCaptureApp(App):
 
         if self.timer is None:
             self.timer = Clock.schedule_interval(self.update_timer, 1)
-        print("Iniciar captura clicado")
+        print("Captura de presença iniciada, a captura será finalizada ao fim do temporizador")
 
     def close_presence(self, instance):
         self.capture.release()
         cv2.destroyAllWindows()
-        PresenceCaptureApp.stop(self)
+        CapturaPresencaVideo.stop(self)
 
     def update(self, dt):
         ret, frame = self.capture.read()
@@ -229,4 +229,4 @@ class PresenceCaptureApp(App):
 
 
 if __name__ == '__main__':
-    PresenceCaptureApp().run()
+    CapturaPresencaVideo().run()

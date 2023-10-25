@@ -31,6 +31,10 @@ class MainMenu(BoxLayout):
         button_banco_de_dados.bind(on_release=self.open_database)
         container_central.add_widget(button_banco_de_dados)
 
+        button_submete_presenca = Button(text="Submeter Presença para IFF Acadêmico")
+        button_submete_presenca.bind(on_release=self.open_submete_presenca)
+        container_central.add_widget(button_submete_presenca)
+
         button_captura_video = Button(text="Captura de Presença em Tempo Real", size=(200, 50))
         button_captura_video.bind(on_release=self.open_captura_video)
         container_central.add_widget(button_captura_video)
@@ -47,13 +51,17 @@ class MainMenu(BoxLayout):
 
         container_central.add_widget(container_presenca_imagem)
 
+        # Botão duplo em linha
+        container_config_fechar = BoxLayout(orientation='horizontal', spacing=5)
         button_config = Button(text="Configurações", size=(200, 50))
         button_config.bind(on_release=self.open_config)
-        container_central.add_widget(button_config)
+        container_config_fechar.add_widget(button_config)
 
         button_close = Button(text="Fechar Aplicação", size=(200, 50))
         button_close.bind(on_release=self.close_apps)
-        container_central.add_widget(button_close)
+        container_config_fechar.add_widget(button_close)
+
+        container_central.add_widget(container_config_fechar)
 
         # Adicione o BoxLayout com a imagem e os botões ao MainMenu
         self.add_widget(container_central)
@@ -82,6 +90,16 @@ class MainMenu(BoxLayout):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
             app_path = os.path.join(current_directory, 'modulo_banco_de_dados.py')
+            print("Abrindo:", app_path)
+            process = subprocess.Popen(['python', app_path])
+            self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
+        except Exception as e:
+            print(f"Erro ao abrir a aplicação: {e}")
+
+    def open_submete_presenca(self, instance):
+        try:
+            current_directory = os.path.dirname(os.path.abspath(__file__))
+            app_path = os.path.join(current_directory, 'modulo_submete_presenca.py')
             print("Abrindo:", app_path)
             process = subprocess.Popen(['python', app_path])
             self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
