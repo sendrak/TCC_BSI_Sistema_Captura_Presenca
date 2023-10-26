@@ -21,7 +21,7 @@ class CapturaPresencaImagem(App):
         self.image = Image(source='Imagens/selecione_imagem.png')
         left_column = BoxLayout(orientation='vertical', spacing=10)
         left_column.add_widget(self.image)
-        self.file_chooser = FileChooserListView(path=str(os.getcwd()))
+        self.file_chooser = FileChooserListView(path=str("ImagensParaPresenca")) # Pasta que vai abrir como default
         self.file_chooser.bind(on_submit=self.load_image)
         left_column.add_widget(self.file_chooser)
 
