@@ -172,5 +172,6 @@ class CapturaPresencaImagem(App):
     def close_popup(self, instance):
         App.get_running_app().stop()
 
+
 if __name__ == '__main__':
     CapturaPresencaImagem().run()

@@ -78,7 +78,7 @@ class CapturaPresencaVideo(App):
         self.detected_people = {}
         self.timer = None
         self.remaining_time = 600  # 10 minutos em segundos
-        self.popup_shown = False  # Atributo para rastrear se o popup foi mostrado
+        self.mostrar_popup = True  # Atributo para rastrear se o popup foi mostrado
         self.is_capturing = False  # Atributo para controlar a captura em andamento
 
         Clock.schedule_interval(self.update, 0 / 30.0)  # 30 FPS
@@ -97,7 +97,7 @@ class CapturaPresencaVideo(App):
 
         if not self.is_capturing:
             self.is_capturing = True
-            self.popup_shown = False  # Redefinir o popup mostrado
+            self.mostrar_popup = True  # Redefinir o popup mostrado
 
             self.remaining_time = user_time_input
             self.timer_label.text = f"Tempo restante: {user_time_input // 60:02}:{user_time_input % 60:02}"
@@ -105,6 +105,58 @@ class CapturaPresencaVideo(App):
             if self.timer is None:
                 self.timer = Clock.schedule_interval(self.update_timer, 1)
             print("Captura de presença iniciada, a captura será finalizada ao fim do temporizador")
+
+
+    def cria_excel(self, instance):
+        data = self.date_input.text
+        curso = self.text_input1.text
+        disciplina = self.text_input2.text
+        filename = f"{curso}_{disciplina}_{data}.xlsx"
+
+        workbook = Workbook()
+        sheet = workbook.active
+
+        # Criação das Colunas
+        sheet.cell(row=1, column=1, value="Aluno")
+        sheet.cell(row=1, column=2, value="Matricula")
+        sheet.cell(row=1, column=3, value="Status")
+
+        # Diretório de imagens das pessoas registradas
+        people_dir = "Pessoas"
+
+        # Carregar imagens das pessoas registradas
+        known_faces, known_names = self.load_known_faces(people_dir)
+
+        # Define todas as pessoas como "AUSENTE" inicialmente para preenchimento
+        all_people = [os.path.splitext(filename)[0] for filename in os.listdir(people_dir)]
+        row_index = 2
+
+        # Faces reconhecidas na imagem selecionada
+        recognized_people = self.get_pessoas_presentes(self.image.source, known_faces, known_names)
+
+        for person in all_people:
+            person = person.replace(".png", "")
+            nome_matricula = person.split("_")
+            nome = nome_matricula[0]
+            matricula = nome_matricula[1]
+            status = "AUSENTE" # Definindo todas as pessoas
+
+            sheet.cell(row=row_index, column=1, value=nome)
+            sheet.cell(row=row_index, column=2, value=matricula)
+            sheet.cell(row=row_index, column=3, value=status)
+            row_index += 1
+
+        # Salvando o arquivo Excel no diretório designado
+        app_root_dir = os.path.dirname(os.path.abspath(__file__))
+        save_dir = os.path.join(app_root_dir, "PresencasCapturadas")
+        os.makedirs(save_dir, exist_ok=True)  # Crie o diretório se ele não existir
+
+        file_path = os.path.join(save_dir, filename)
+        workbook.save(file_path)
+
+
+    def atualiza_excel(self, instance):
+        print("teste update")
 
     def close_app(self, instance):
         App.get_running_app().stop()
@@ -149,12 +201,12 @@ class CapturaPresencaVideo(App):
             minutes = self.remaining_time // 60
             seconds = self.remaining_time % 60
             self.timer_label.text = f"Tempo restante: {minutes:02}:{seconds:02}"
-        elif not self.popup_shown:
+        elif self.mostrar_popup is True:
             self.timer_label.text = "Tempo esgotado, presença finalizada"
             self.popup_finaliza_tempo()
 
     def popup_finaliza_tempo(self):
-        self.popup_shown = True  # Marcar o popup como mostrado para evitar múltiplas chamadas
+        self.mostrar_popup = False  # Marcar o popup como mostrado para evitar múltiplas chamadas
         message = "Tempo esgotado, presença finalizada"
 
         box_popup = BoxLayout(orientation='vertical')
@@ -166,6 +218,7 @@ class CapturaPresencaVideo(App):
 
         close_button.bind(on_release=popup.dismiss)
         popup.open()
+
 
 if __name__ == '__main__':
     CapturaPresencaVideo().run()
