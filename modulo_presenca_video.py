@@ -48,7 +48,7 @@ class CapturaPresencaVideo(App):
         text_input2 = TextInput(hint_text='Disciplina')
 
         start_button = Button(text='Iniciar Captura de Presença')
-        start_button.bind(on_press=self.start_capture)
+        start_button.bind(on_press=self.inicia_presenca)
 
         close_button = Button(text='Fechar')
         close_button.bind(on_press=self.close_app)
@@ -81,7 +81,7 @@ class CapturaPresencaVideo(App):
         self.popup_shown = False  # Atributo para rastrear se o popup foi mostrado
         self.is_capturing = False  # Atributo para controlar a captura em andamento
 
-        Clock.schedule_interval(self.update, 1.0 / 30.0)  # 30 FPS
+        Clock.schedule_interval(self.update, 0 / 30.0)  # 30 FPS
 
         self.date_input = date_input
         self.text_input1 = text_input1
@@ -89,7 +89,7 @@ class CapturaPresencaVideo(App):
 
         return layout
 
-    def start_capture(self, instance):
+    def inicia_presenca(self, instance):
         user_time_input = int(self.timer_input.text)
         if user_time_input <= 0:
             print("O tempo deve ser um valor inteiro maior que zero")
@@ -151,9 +151,9 @@ class CapturaPresencaVideo(App):
             self.timer_label.text = f"Tempo restante: {minutes:02}:{seconds:02}"
         elif not self.popup_shown:
             self.timer_label.text = "Tempo esgotado, presença finalizada"
-            self.show_popup()
+            self.popup_finaliza_tempo()
 
-    def show_popup(self):
+    def popup_finaliza_tempo(self):
         self.popup_shown = True  # Marcar o popup como mostrado para evitar múltiplas chamadas
         message = "Tempo esgotado, presença finalizada"
 
@@ -162,116 +162,9 @@ class CapturaPresencaVideo(App):
         close_button = Button(text='Fechar')
         box_popup.add_widget(close_button)
 
-        popup = Popup(title='Tempo Esgotado', content=box_popup, size_hint=(0.5, 0.5))
+        popup = Popup(title='Tempo de Presença Esgotado', content=box_popup, size_hint=(0.5, 0.5))
 
         close_button.bind(on_release=popup.dismiss)
-        popup.open()
-
-    def update_excel(self, data):
-        curso = self.text_input1.text
-        disciplina = self.text_input2.text
-        filename = f"{curso}_{disciplina}_{data}.xlsx"
-
-        if not os.path.exists(filename):
-            # Se o arquivo não existe, crie-o e preencha pessoas ausentes
-            workbook = Workbook()
-            sheet = workbook.active
-
-            # Criação das Colunas
-            sheet.cell(row=1, column=1, value="Aluno")
-            sheet.cell(row=1, column=2, value="Matrícula")
-            sheet.cell(row=1, column=3, value="Status")
-
-            # Diretório de imagens das pessoas registradas
-            people_dir = "Pessoas"
-
-            # Carregar imagens das pessoas registradas
-            known_faces, known_names = self.load_known_faces(people_dir)
-
-            # Define todas as pessoas como "AUSENTES" inicialmente para preenchimento
-            all_people = [os.path.splitext(filename)[0] for filename in os.listdir(people_dir)]
-            row_index = 2
-
-            for person in all_people:
-                person = person.replace(".png", "")
-                nome_matricula = person.split("_")
-                nome = nome_matricula[0]
-                matricula = nome_matricula[1]
-
-                status = "AUSENTE"
-                sheet.cell(row=row_index, column=1, value=nome)
-                sheet.cell(row=row_index, column=2, value=matricula)
-                sheet.cell(row=row_index, column=3, value=status)
-                row_index += 1
-
-            # Salvando o arquivo Excel no diretório designado
-            app_root_dir = os.path.dirname(os.path.abspath(__file__))
-            save_dir = os.path.join(app_root_dir, "PresencasCapturadas")
-            os.makedirs(save_dir, exist_ok=True)  # Crie o diretório se ele não existir
-
-            file_path = os.path.join(save_dir, filename)
-            workbook.save(file_path)
-        else:
-            # Se o arquivo existe, atualize o status das pessoas
-            workbook = load_workbook(filename)
-            sheet = workbook.active
-
-            # Faces reconhecidas na imagem da câmera
-            recognized_people = self.get_pessoas_presentes(self.camera.texture, known_faces, known_names)
-
-            # Atualize o status das pessoas no arquivo
-            for row in sheet.iter_rows(min_row=2, max_row=sheet.max_row, min_col=1, max_col=2):
-                nome = row[0].value
-                matricula = row[1].value
-                status = "PRESENTE" if f"{nome}_{matricula}" in recognized_people else "AUSENTE"
-                sheet.cell(row=row[0].row, column=3, value=status)
-
-            # Salvando o arquivo Excel no diretório designado
-            app_root_dir = os.path.dirname(os.path.abspath(__file__))
-            save_dir = os.path.join(app_root_dir, "PresencasCapturadas")
-            os.makedirs(save_dir, exist_ok=True)  # Crie o diretório se ele não existir
-
-            file_path = os.path.join(save_dir, filename)
-            workbook.save(file_path)
-
-        self.show_info_popup(f'Arquivo de presença "{filename}" \nfoi gerado ou atualizado com sucesso na Pasta.')
-
-    def load_known_faces(self, people_dir):
-        known_faces = []
-        known_names = []
-        for filename in os.listdir(people_dir):
-            if filename.endswith(".png"):
-                image = face_recognition.load_image_file(os.path.join(people_dir, filename))
-                face_encoding = face_recognition.face_encodings(image)[0]
-                known_faces.append(face_encoding)
-                known_names.append(os.path.splitext(filename)[0])
-        return known_faces, known_names
-
-    def get_pessoas_presentes(self, camera_texture, known_faces, known_names):
-        # Aqui você pode usar o código para reconhecimento facial nas imagens da câmera
-        # e retornar uma lista das pessoas presentes.
-        # Certifique-se de comparar as faces na imagem da câmera com as faces conhecidas (known_faces).
-        # Este é um exemplo de como fazer isso:
-        # Reconheça as faces na imagem da câmera
-        recognized_faces = face_recognition.face_encodings(camera_texture)
-        recognized_names = []
-
-        for face in recognized_faces:
-            matches = face_recognition.compare_faces(known_faces, face)
-            recognized_name = "Desconhecido"  # Se não for reconhecido
-            if True in matches:
-                first_match_index = matches.index(True)
-                recognized_name = known_names[first_match_index]
-            recognized_names.append(recognized_name)
-
-        return recognized_names
-
-    def show_info_popup(self, text):
-        layout = GridLayout(cols=1)
-        info_label = Label(text=text, halign='center')
-        layout.add_widget(info_label)
-
-        popup = Popup(title='Informação', content=layout, size_hint=(0.5, 0.5))
         popup.open()
 
 if __name__ == '__main__':
