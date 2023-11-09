@@ -19,5 +19,7 @@ pip install kivymd
 Manipulação de Excel:
 pip install openpyxl
 
+pip install pandas
+
 Documentações consultadas:
 kivy: https://kivy.org/doc/stable-1.10.1/installation/installation-windows.html
