@@ -25,6 +25,12 @@ class ConfigScreen(BoxLayout):
         self.add_widget(self.select_cam_label)
         self.add_widget(self.select_cam_input)
 
+        # Novo Label e TextInput para a Matrícula
+        self.select_matricula_label = Label(text="Informe a Matrícula Padrão:", size_hint_y=None, height=30)
+        self.select_matricula_input = TextInput(size_hint_y=None, height=30)
+        self.add_widget(self.select_matricula_label)
+        self.add_widget(self.select_matricula_input)
+
         self.select_disciplina_label = Label(text="Informe a Disciplina Padrão:", size_hint_y=None, height=30)
         self.select_disciplina_input = TextInput(size_hint_y=None, height=30)
         self.add_widget(self.select_disciplina_label)
@@ -40,6 +46,7 @@ class ConfigScreen(BoxLayout):
             with open("Configuracoes/config.txt", "r") as config_file:
                 config = json.load(config_file)
                 self.select_cam_input.text = config.get("select_cam", "")
+                self.select_matricula_input.text = config.get("select_matricula", "")
                 self.select_disciplina_input.text = config.get("select_disciplina", "")
                 self.select_curso_input.text = config.get("select_curso", "")
         except FileNotFoundError:
@@ -59,6 +66,7 @@ class ConfigScreen(BoxLayout):
         # Salve os parâmetros no arquivo config.txt
         config = {
             "select_cam": self.select_cam_input.text,
+            "select_matricula": self.select_matricula_input.text,
             "select_disciplina": self.select_disciplina_input.text,
             "select_curso": self.select_curso_input.text,
         }
@@ -69,18 +77,26 @@ class ConfigScreen(BoxLayout):
         # Crie uma mensagem com os novos valores
         message = f"Configurações Padrão Alteradas:\n\n" \
                   f"Selecione a Camera: {config['select_cam']}\n" \
+                  f"Informe a Matrícula Padrão: {config['select_matricula']}\n" \
                   f"Informe a Disciplina Padrão: {config['select_disciplina']}\n" \
                   f"Informe o Curso Padrão: {config['select_curso']}"
 
         # Abra uma popup de confirmação com os novos valores
-        popup = Popup(title="Configurações Alteradas",
-                      content=Label(text=message),
-                      size_hint=(0.5, 0.5))
+        popup = Popup(title="Configurações Alteradas", size_hint=(0.5, 0.5))
+
+        # Crie uma BoxLayout para organizar os widgets dentro da popup
+        popup_content = BoxLayout(orientation='vertical')
+
+        # Adicione um Label com a mensagem
+        popup_content.add_widget(Label(text=message))
 
         # Adicione um botão "Fechar Popup" para fechar a popup
-        close_popup_button = Button(text="Fechar Popup")
+        close_popup_button = Button(text="Fechar Popup", size_hint_y=None, height=40)
         close_popup_button.bind(on_press=popup.dismiss)
-        popup.content.add_widget(close_popup_button)
+        popup_content.add_widget(close_popup_button)
+
+        # Configure o conteúdo da popup
+        popup.content = popup_content
 
         popup.open()
 
