@@ -14,6 +14,7 @@ from datetime import datetime
 from openpyxl import Workbook, load_workbook
 import os
 
+
 class CapturaPresencaVideo(App):
     def build(self):
         self.title = 'Instituto Federal Fluminense - Captura de Presença'
@@ -106,7 +107,6 @@ class CapturaPresencaVideo(App):
                 self.timer = Clock.schedule_interval(self.update_timer, 1)
             print("Captura de presença iniciada, a captura será finalizada ao fim do temporizador")
 
-
     def cria_excel(self, instance):
         data = self.date_input.text
         curso = self.text_input1.text
@@ -139,7 +139,7 @@ class CapturaPresencaVideo(App):
             nome_matricula = person.split("_")
             nome = nome_matricula[0]
             matricula = nome_matricula[1]
-            status = "AUSENTE" # Definindo todas as pessoas
+            status = "AUSENTE"  # Definindo todas as pessoas
 
             sheet.cell(row=row_index, column=1, value=nome)
             sheet.cell(row=row_index, column=2, value=matricula)
@@ -153,7 +153,6 @@ class CapturaPresencaVideo(App):
 
         file_path = os.path.join(save_dir, filename)
         workbook.save(file_path)
-
 
     def atualiza_excel(self, instance):
         print("teste update")
@@ -185,7 +184,8 @@ class CapturaPresencaVideo(App):
                 for person_name in exited_people:
                     print(f"{person_name} saiu do alcance da câmera")
 
-                self.detected_people = {person_name: (top, right, bottom, left) for (top, right, bottom, left), person_name
+                self.detected_people = {person_name: (top, right, bottom, left) for
+                                        (top, right, bottom, left), person_name
                                         in zip(face_locations, newly_detected_people)}
 
                 buffer = cv2.flip(frame, 0).tobytes()

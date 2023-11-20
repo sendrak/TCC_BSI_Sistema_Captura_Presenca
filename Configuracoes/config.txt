@@ -1,1 +1,1 @@
-{"select_cam": "0", "select_matricula": "201721200207", "select_disciplina": "TCC1", "select_curso": "BSI"}
+{"select_cam": "0", "select_matricula": "201721200207", "select_disciplina": "TCC2", "select_curso": "Bacharelado em Sistemas de Informa\u00e7\u00e3o"}
