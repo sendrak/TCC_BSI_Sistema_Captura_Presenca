@@ -7,11 +7,10 @@ from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.image import Image
 from kivy.uix.label import Label
-from kivy.uix.gridlayout import GridLayout
-from kivy.graphics.texture import Texture
 from kivy.clock import Clock
+from kivy.graphics.texture import Texture
 from datetime import datetime
-from openpyxl import Workbook, load_workbook
+from openpyxl import Workbook
 import os
 
 
@@ -26,7 +25,8 @@ class CapturaPresencaVideo(App):
         # Coluna 1: Visualização da câmera e captura
         col1_layout = BoxLayout(orientation='vertical', spacing=10)
 
-        self.camera = Image()
+        # Adicionando 'no_camera' como imagem padrão
+        self.camera = Image(source='Imagens/no_camera.png', allow_stretch=True)
         col1_layout.add_widget(self.camera)
 
         # Temporizador
@@ -82,7 +82,7 @@ class CapturaPresencaVideo(App):
         self.mostrar_popup = True  # Atributo para rastrear se o popup foi mostrado
         self.is_capturing = False  # Atributo para controlar a captura em andamento
 
-        Clock.schedule_interval(self.update, 0 / 30.0)  # 30 FPS
+        Clock.schedule_interval(self.update, 1 / 30.0)  # 30 FPS
 
         self.date_input = date_input
         self.text_input1 = text_input1
@@ -96,6 +96,11 @@ class CapturaPresencaVideo(App):
             print("O tempo deve ser um valor inteiro maior que zero")
             return
 
+        # Verificar se a câmera foi aberta com sucesso
+        if not self.capture.isOpened():
+            print("Erro ao abrir a câmera.")
+            return
+
         if not self.is_capturing:
             self.is_capturing = True
             self.mostrar_popup = True  # Redefinir o popup mostrado
@@ -105,60 +110,26 @@ class CapturaPresencaVideo(App):
 
             if self.timer is None:
                 self.timer = Clock.schedule_interval(self.update_timer, 1)
-            print("Captura de presença iniciada, a captura será finalizada ao fim do temporizador")
 
-    def cria_excel(self, instance):
-        data = self.date_input.text
-        curso = self.text_input1.text
-        disciplina = self.text_input2.text
-        filename = f"{curso}_{disciplina}_{data}.xlsx"
+            # Verifica se o arquivo Excel já existe
+            data = self.date_input.text
+            curso = self.text_input1.text
+            disciplina = self.text_input2.text
+            filename = f"{curso}_{disciplina}_{data}.xlsx"
+            file_path = os.path.join("PresencasCapturadas", filename)
 
-        workbook = Workbook()
-        sheet = workbook.active
+            if not os.path.exists(file_path):
+                # Se o arquivo não existe, cria e preenche
+                self.cria_excel(None)
+            else:
+                # Se o arquivo existe, apenas inicia a captura
+                print("Captura de presença iniciada, a captura será finalizada ao fim do temporizador")
 
-        # Criação das Colunas
-        sheet.cell(row=1, column=1, value="Aluno")
-        sheet.cell(row=1, column=2, value="Matricula")
-        sheet.cell(row=1, column=3, value="Status")
-
-        # Diretório de imagens das pessoas registradas
-        people_dir = "Pessoas"
-
-        # Carregar imagens das pessoas registradas
-        known_faces, known_names = self.load_known_faces(people_dir)
-
-        # Define todas as pessoas como "AUSENTE" inicialmente para preenchimento
-        all_people = [os.path.splitext(filename)[0] for filename in os.listdir(people_dir)]
-        row_index = 2
-
-        # Faces reconhecidas na imagem selecionada
-        recognized_people = self.get_pessoas_presentes(self.image.source, known_faces, known_names)
-
-        for person in all_people:
-            person = person.replace(".png", "")
-            nome_matricula = person.split("_")
-            nome = nome_matricula[0]
-            matricula = nome_matricula[1]
-            status = "AUSENTE"  # Definindo todas as pessoas
-
-            sheet.cell(row=row_index, column=1, value=nome)
-            sheet.cell(row=row_index, column=2, value=matricula)
-            sheet.cell(row=row_index, column=3, value=status)
-            row_index += 1
-
-        # Salvando o arquivo Excel no diretório designado
-        app_root_dir = os.path.dirname(os.path.abspath(__file__))
-        save_dir = os.path.join(app_root_dir, "PresencasCapturadas")
-        os.makedirs(save_dir, exist_ok=True)  # Crie o diretório se ele não existir
-
-        file_path = os.path.join(save_dir, filename)
-        workbook.save(file_path)
-
-    def atualiza_excel(self, instance):
-        print("teste update")
-
-    def close_app(self, instance):
-        App.get_running_app().stop()
+    def stop_capturing(self):
+        self.is_capturing = False
+        self.capture.release()
+        # Exibe a imagem 'no_camera' ao finalizar a captura
+        self.camera.source = 'Imagens/no_camera.png'
 
     def update(self, dt):
         if self.is_capturing:
@@ -204,6 +175,10 @@ class CapturaPresencaVideo(App):
         elif self.mostrar_popup is True:
             self.timer_label.text = "Tempo esgotado, presença finalizada"
             self.popup_finaliza_tempo()
+            self.stop_capturing()  # Pare a captura quando o tempo se esgotar
+
+            # Adicione a chamada para a função de atualização do Excel aqui
+            self.atualiza_excel(None)
 
     def popup_finaliza_tempo(self):
         self.mostrar_popup = False  # Marcar o popup como mostrado para evitar múltiplas chamadas
@@ -218,6 +193,72 @@ class CapturaPresencaVideo(App):
 
         close_button.bind(on_release=popup.dismiss)
         popup.open()
+
+    def atualiza_excel(self, instance):
+        print("Função de atualização do Excel chamada")
+        # Adicione aqui a lógica para atualizar o Excel com as pessoas presentes
+
+    def cria_excel(self, instance):
+        data = self.date_input.text
+        curso = self.text_input1.text
+        disciplina = self.text_input2.text
+        filename = f"{curso}_{disciplina}_{data}.xlsx"
+
+        workbook = Workbook()
+        sheet = workbook.active
+
+        # Criação das Colunas
+        sheet.cell(row=1, column=1, value="Aluno")
+        sheet.cell(row=1, column=2, value="Matricula")
+        sheet.cell(row=1, column=3, value="Status")
+
+        # Diretório de imagens das pessoas registradas
+        people_dir = "Pessoas"
+
+        # Carregar imagens das pessoas registradas
+        self.known_faces, self.known_names = self.load_known_faces(people_dir)
+
+        # Define todas as pessoas como "AUSENTE" inicialmente para preenchimento
+        all_people = [os.path.splitext(filename)[0] for filename in os.listdir(people_dir)]
+        row_index = 2
+
+        for person in all_people:
+            person = person.replace(".png", "")
+            nome_matricula = person.split("_")
+            nome = nome_matricula[0]
+            matricula = nome_matricula[1]
+            status = "AUSENTE"  # Definindo todas as pessoas
+
+            sheet.cell(row=row_index, column=1, value=nome)
+            sheet.cell(row=row_index, column=2, value=matricula)
+            sheet.cell(row=row_index, column=3, value=status)
+            row_index += 1
+
+        # Salvando o arquivo Excel no diretório designado
+        app_root_dir = os.path.dirname(os.path.abspath(__file__))
+        save_dir = os.path.join(app_root_dir, "PresencasCapturadas")
+        os.makedirs(save_dir, exist_ok=True)  # Crie o diretório se ele não existir
+
+        file_path = os.path.join(save_dir, filename)
+        workbook.save(file_path)
+
+    def load_known_faces(self, people_dir):
+        known_faces = []
+        known_names = []
+
+        for filename in os.listdir(people_dir):
+            if filename.endswith(".png"):
+                path = os.path.join(people_dir, filename)
+                image = face_recognition.load_image_file(path)
+                encoding = face_recognition.face_encodings(image)[0]
+                known_faces.append(encoding)
+                known_names.append(os.path.splitext(filename)[0])
+
+        return known_faces, known_names
+
+    def close_app(self, instance):
+        print("Clicou Fechar App")
+        App.get_running_app().stop()
 
 
 if __name__ == '__main__':
