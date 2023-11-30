@@ -13,6 +13,8 @@ from datetime import datetime
 from openpyxl import Workbook
 import os
 
+from openpyxl.reader.excel import load_workbook
+
 
 class CapturaPresencaVideo(App):
     def build(self):
@@ -49,7 +51,7 @@ class CapturaPresencaVideo(App):
         text_input2 = TextInput(hint_text='Disciplina')
 
         start_button = Button(text='Iniciar Captura de Presença')
-        start_button.bind(on_press=self.inicia_presenca)
+        start_button.bind(on_press=self.inicia_processo_presenca)
 
         close_button = Button(text='Fechar')
         close_button.bind(on_press=self.close_app)
@@ -82,7 +84,7 @@ class CapturaPresencaVideo(App):
         self.mostrar_popup = True  # Atributo para rastrear se o popup foi mostrado
         self.is_capturing = False  # Atributo para controlar a captura em andamento
 
-        Clock.schedule_interval(self.update, 1 / 30.0)  # 30 FPS
+        Clock.schedule_interval(self.update, 0 / 30.0)  # Mais próximo de zero aumenta a taxa de atualização
 
         self.date_input = date_input
         self.text_input1 = text_input1
@@ -90,7 +92,7 @@ class CapturaPresencaVideo(App):
 
         return layout
 
-    def inicia_presenca(self, instance):
+    def inicia_processo_presenca(self, instance):
         user_time_input = int(self.timer_input.text)
         if user_time_input <= 0:
             print("O tempo deve ser um valor inteiro maior que zero")
@@ -178,7 +180,7 @@ class CapturaPresencaVideo(App):
             self.stop_capturing()  # Pare a captura quando o tempo se esgotar
 
             # Adicione a chamada para a função de atualização do Excel aqui
-            self.atualiza_excel(None)
+            self.atualiza_excel()
 
     def popup_finaliza_tempo(self):
         self.mostrar_popup = False  # Marcar o popup como mostrado para evitar múltiplas chamadas
@@ -194,9 +196,28 @@ class CapturaPresencaVideo(App):
         close_button.bind(on_release=popup.dismiss)
         popup.open()
 
-    def atualiza_excel(self, instance):
+    def atualiza_excel(self):
         print("Função de atualização do Excel chamada")
-        # Adicione aqui a lógica para atualizar o Excel com as pessoas presentes
+
+        # Diretório do arquivo Excel
+        data = self.date_input.text
+        curso = self.text_input1.text
+        disciplina = self.text_input2.text
+        filename = f"{curso}_{disciplina}_{data}.xlsx"
+        file_path = os.path.join("PresencasCapturadas", filename)
+
+        # Carrega o arquivo Excel existente
+        workbook = load_workbook(file_path)
+        sheet = workbook.active
+
+        # Preenche 'PRESENTE' para as pessoas encontradas durante a captura
+        for person_name in self.detected_people.keys():
+            if person_name in self.known_names:
+                row_index = self.known_names.index(person_name) + 2
+                sheet.cell(row=row_index, column=3, value="PRESENTE")
+
+        # Salva as alterações no arquivo Excel
+        workbook.save(file_path)
 
     def cria_excel(self, instance):
         data = self.date_input.text
