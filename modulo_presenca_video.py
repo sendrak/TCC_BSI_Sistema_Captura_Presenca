@@ -93,6 +93,7 @@ class CapturaPresencaVideo(App):
         return layout
 
     def inicia_processo_presenca(self, instance):
+        self.lista_presenca = []
         user_time_input = int(self.timer_input.text)
         if user_time_input <= 0:
             print("O tempo deve ser um valor inteiro maior que zero")
@@ -149,6 +150,7 @@ class CapturaPresencaVideo(App):
                         newly_detected_people.add(person_name)
                         if person_name not in self.detected_people:
                             print(f"Face reconhecida na câmera: {person_name}")
+                            self.montagem_presenca(person_name)
                         cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
                     else:
                         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
@@ -167,6 +169,14 @@ class CapturaPresencaVideo(App):
                 self.camera.texture = texture
             else:
                 self.camera.source = 'Imagens/no_camera.png'
+
+    def montagem_presenca(self, nome_matricula):
+        nome, _ = nome_matricula.split("_", 1)
+        if nome not in self.lista_presenca:
+            self.lista_presenca.append(nome_matricula)
+            print(f"{nome_matricula} adicionado na lista de presença")
+        else:
+            print(f"{nome_matricula} já está na lista de presença")
 
     def update_timer(self, dt):
         if self.remaining_time > 0:
@@ -211,9 +221,9 @@ class CapturaPresencaVideo(App):
         sheet = workbook.active
 
         # Preenche 'PRESENTE' para as pessoas encontradas durante a captura
-        for person_name in self.detected_people.keys():
-            if person_name in self.known_names:
-                row_index = self.known_names.index(person_name) + 2
+        for nome in self.lista_presenca:
+            if nome in self.known_names:
+                row_index = self.known_names.index(nome) + 2
                 sheet.cell(row=row_index, column=3, value="PRESENTE")
 
         # Salva as alterações no arquivo Excel
