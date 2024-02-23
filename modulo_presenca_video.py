@@ -1,3 +1,5 @@
+import json
+
 import cv2
 import face_recognition
 from kivy.app import App
@@ -20,6 +22,16 @@ class CapturaPresencaVideo(App):
     def build(self):
         self.title = 'Instituto Federal Fluminense - Captura de Presença'
         self.icon = 'Imagens/icone_camera.png'
+
+        try:
+            with open("Configuracoes/config.txt", "r") as config_file:
+                config = json.load(config_file)
+                # select_cam = config.get("select_cam", "")
+                select_matricula = config.get("select_matricula", "")
+                select_disciplina = config.get("select_disciplina", "")
+                select_curso = config.get("select_curso", "")
+        except FileNotFoundError:
+            pass
 
         # Layout principal com duas colunas
         layout = BoxLayout(orientation='horizontal', spacing=10)
@@ -47,8 +59,8 @@ class CapturaPresencaVideo(App):
         data_de_hoje = datetime.now().strftime('%Y-%m-%d')
         date_input = TextInput(hint_text='Data', text=data_de_hoje)
 
-        text_input1 = TextInput(hint_text='Curso')
-        text_input2 = TextInput(hint_text='Disciplina')
+        text_input1 = TextInput(hint_text='Curso', text=select_curso)
+        text_input2 = TextInput(hint_text='Disciplina', text=select_disciplina)
 
         start_button = Button(text='Iniciar Captura de Presença')
         start_button.bind(on_press=self.inicia_processo_presenca)

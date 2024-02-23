@@ -1,3 +1,4 @@
+import json
 import os
 import datetime
 import cv2
@@ -19,6 +20,17 @@ class CapturaPresencaImagem(App):
         self.title = 'Gerar Presença por Imagem'
         self.icon = 'Imagens/icone_camera.png'
         self.image = Image(source='Imagens/selecione_imagem.png')
+
+        try:
+            with open("Configuracoes/config.txt", "r") as config_file:
+                config = json.load(config_file)
+                # select_cam = config.get("select_cam", "")
+                select_matricula = config.get("select_matricula", "")
+                select_disciplina = config.get("select_disciplina", "")
+                select_curso = config.get("select_curso", "")
+        except FileNotFoundError:
+            pass
+
         left_column = BoxLayout(orientation='vertical', spacing=10)
         left_column.add_widget(self.image)
         self.file_chooser = FileChooserListView(path=str("ImagensParaPresenca")) # Pasta que vai abrir como default
@@ -31,8 +43,8 @@ class CapturaPresencaImagem(App):
         self.label_text_input2 = Label(text='Disciplina:')
         data_de_hoje = datetime.datetime.now().strftime('%Y-%m-%d')
         self.date_input = TextInput(hint_text='Data', text=data_de_hoje)
-        self.text_input1 = TextInput(hint_text='Curso')
-        self.text_input2 = TextInput(hint_text='Disciplina')
+        self.text_input1 = TextInput(hint_text='Curso', text=select_curso)
+        self.text_input2 = TextInput(hint_text='Disciplina', text=select_disciplina)
 
         generate_button = Button(text='Gerar Presença')
         close_button = Button(text='Fechar')

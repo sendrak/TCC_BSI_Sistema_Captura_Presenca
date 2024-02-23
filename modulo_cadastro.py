@@ -1,3 +1,5 @@
+import json
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.togglebutton import ToggleButton
@@ -15,9 +17,21 @@ class ConteudoCadastroPessoas(BoxLayout):
         super(ConteudoCadastroPessoas, self).__init__(**kwargs)
         self.orientation = 'horizontal'
 
+        # Selecionando a câmera a partir das configurações
+        try:
+            with open("Configuracoes/config.txt", "r") as config_file:
+                config = json.load(config_file)
+                select_cam = config.get("select_cam", "")
+                # select_matricula = config.get("select_matricula", "")
+                # select_disciplina = config.get("select_disciplina", "")
+                # select_curso = config.get("select_curso", "")
+        except FileNotFoundError:
+            pass
+
         # Adicione a câmera à coluna da esquerda
         self.container_esquerda = BoxLayout(orientation='vertical', padding=5, spacing=5)
         self.camera = Camera(resolution=(640, 480), play=True)
+        self.camera.index = select_cam
         self.container_esquerda.add_widget(self.camera)
         self.add_widget(self.container_esquerda)
 

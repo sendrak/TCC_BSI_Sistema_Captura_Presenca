@@ -74,7 +74,7 @@ class ConfigScreen(BoxLayout):
         with open("Configuracoes/config.txt", "w") as config_file:
             json.dump(config, config_file)
 
-        # Crie uma mensagem com os novos valores
+        # Mensagem com novos valores
         message = f"Configurações Padrão Alteradas:\n\n" \
                   f"Selecione a Camera: {config['select_cam']}\n" \
                   f"Informe a Matrícula Padrão: {config['select_matricula']}\n" \
@@ -82,7 +82,7 @@ class ConfigScreen(BoxLayout):
                   f"Informe o Curso Padrão: {config['select_curso']}"
 
         # Abra uma popup de confirmação com os novos valores
-        popup = Popup(title="Configurações Alteradas", size_hint=(0.5, 0.5))
+        popup = Popup(title="Configurações Alteradas", size_hint=(0.7, 0.7))
 
         # Crie uma BoxLayout para organizar os widgets dentro da popup
         popup_content = BoxLayout(orientation='vertical')

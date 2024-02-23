@@ -1,3 +1,5 @@
+import json
+
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.togglebutton import ToggleButton
@@ -15,6 +17,17 @@ from datetime import datetime
 class ConteudoCadastroPessoas(BoxLayout):
     def __init__(self, **kwargs):
         super(ConteudoCadastroPessoas, self).__init__(**kwargs)
+
+        try:
+            with open("Configuracoes/config.txt", "r") as config_file:
+                config = json.load(config_file)
+                # select_cam = config.get("select_cam", "")
+                select_matricula = config.get("select_matricula", "")
+                select_disciplina = config.get("select_disciplina", "")
+                select_curso = config.get("select_curso", "")
+        except FileNotFoundError:
+            pass
+
         self.orientation = 'horizontal'
 
         # Adicione a câmera à coluna da esquerda
@@ -29,8 +42,11 @@ class ConteudoCadastroPessoas(BoxLayout):
         self.toggle_button.bind(on_press=self.alternar_camera)
         self.container_direita.add_widget(self.toggle_button)
 
-        self.curso_input = TextInput(size_hint_y=None, height='48dp', hint_text='Curso')
+        self.curso_input = TextInput(size_hint_y=None, height='48dp', hint_text='Curso', text=select_curso)
         self.container_direita.add_widget(self.curso_input)
+
+        self.disciplina_input = TextInput(size_hint_y=None, height='48dp', hint_text='Curso', text=select_disciplina)
+        self.container_direita.add_widget(self.disciplina_input)
 
         # Pega a data de hoje
         data_atual = datetime.now().strftime('%Y-%m-%d')
@@ -53,13 +69,14 @@ class ConteudoCadastroPessoas(BoxLayout):
         self.camera.play = not self.camera.play
 
     def capture(self, instance):
-        name = self.curso_input.text.strip()
-        matricula = self.data_input.text.strip()
-        if not name or not matricula:
+        curso = self.curso_input.text.strip()
+        disciplina = self.disciplina_input.text.strip()
+        data = self.data_input.text.strip()
+        if not curso or not data:
             print("Por favor, preencha o nome e a matrícula da pessoa antes de capturar.")
             return
 
-        filename = os.path.join(self.caminho_salvar, f"{name}_{matricula}.png")
+        filename = os.path.join(self.caminho_salvar, f"{curso}_{disciplina}_{data}.png")
         self.camera.export_to_png(filename)  # Alterado para usar a câmera do self
         self.show_capture_popup(filename)
 
@@ -96,7 +113,9 @@ class CadastroDePessoasApp(App):
         Window.maximize()
         self.title = 'Captura de Imagem da Turma'
         self.icon = 'Imagens/icone_camera.png'
+
         return ConteudoCadastroPessoas()
+
 
 
 if __name__ == '__main__':
