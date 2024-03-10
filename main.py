@@ -27,21 +27,21 @@ class MainMenu(BoxLayout):
         button_cadastro_alunos.bind(on_release=self.open_cadastro)
         container_central.add_widget(button_cadastro_alunos)
 
-        button_banco_de_dados = Button(text="Banco de Dados", size=(200, 50))
+        button_banco_de_dados = Button(text="Banco de Faces Cadastradas", size=(200, 50))
         button_banco_de_dados.bind(on_release=self.open_database)
         container_central.add_widget(button_banco_de_dados)
 
-        button_submete_presenca = Button(text="Submeter Presença para IFF Acadêmico")
+        button_submete_presenca = Button(text="Submeter Presença para IFF Acadêmico(Trabalho Futuro)")
         button_submete_presenca.bind(on_release=self.open_submete_presenca)
         container_central.add_widget(button_submete_presenca)
 
-        button_captura_video = Button(text="Captura de Presença em Tempo Real", size=(200, 50))
+        button_captura_video = Button(text="Captura de Presença Por Vídeo em Tempo Real", size=(200, 50))
         button_captura_video.bind(on_release=self.open_captura_video)
         container_central.add_widget(button_captura_video)
 
         # Botão duplo em linha
         container_presenca_imagem = BoxLayout(orientation='horizontal', spacing=5)
-        button_captura_imagem_turma = Button(text="Captura de Imagem da Turma", size=(200, 50))
+        button_captura_imagem_turma = Button(text="Captura de Foto para Presença da Turma", size=(200, 50))
         button_captura_imagem_turma.bind(on_release=self.open_captura_imagem_turma)
         container_presenca_imagem.add_widget(button_captura_imagem_turma)
 
@@ -65,16 +65,6 @@ class MainMenu(BoxLayout):
 
         # Adicione o BoxLayout com a imagem e os botões ao MainMenu
         self.add_widget(container_central)
-
-    # def open_monitoramento(self, instance):
-    #     try:
-    #         current_directory = os.path.dirname(os.path.abspath(__file__))
-    #         app_path = os.path.join(current_directory, 'modulo_monitoramento.py')
-    #         print("Abrindo:", app_path)
-    #         process = subprocess.Popen(['python', app_path])
-    #         self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
-    #     except Exception as e:
-    #         print(f"Erro ao abrir a aplicação: {e}")
 
     def open_cadastro(self, instance):
         try:
