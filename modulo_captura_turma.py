@@ -112,7 +112,7 @@ class ConteudoCadastroPessoas(BoxLayout):
 class CadastroDePessoasApp(App):
     def build(self):
         Window.maximize()
-        self.title = 'Captura de Imagem da Turma'
+        self.title = 'Instituto Federal Fluminense - Captura de Imagem da Turma'
         self.icon = 'Imagens/icone_camera.png'
 
         return ConteudoCadastroPessoas()

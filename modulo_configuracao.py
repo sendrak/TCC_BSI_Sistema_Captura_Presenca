@@ -106,7 +106,7 @@ class ConfigScreen(BoxLayout):
 
 class ConfigApp(App):
     def build(self):
-        self.title = 'Configurações do Aplicativo'
+        self.title = 'Instituto Federal Fluminense - Configurações do Aplicativo'
         self.icon = 'Imagens/icone_camera.png'
         return ConfigScreen()
 

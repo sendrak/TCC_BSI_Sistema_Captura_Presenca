@@ -17,7 +17,7 @@ import face_recognition
 
 class CapturaPresencaImagem(App):
     def build(self):
-        self.title = 'Gerar Presença por Imagem'
+        self.title = 'Instituto Federal Fluminense - Gerar Presença por Imagem'
         self.icon = 'Imagens/icone_camera.png'
         self.image = Image(source='Imagens/selecione_imagem.png')
 
@@ -177,7 +177,7 @@ class CapturaPresencaImagem(App):
         content.add_widget(Label(text=message))
         close_button = Button(text='Fechar')
         content.add_widget(close_button)
-        popup = Popup(title='Informação', content=content, auto_dismiss=False, size_hint=(None, None), size=(400, 300))
+        popup = Popup(title='Informação', content=content, auto_dismiss=False, size_hint=(None, None), size=(600, 300))
         close_button.bind(on_release=popup.dismiss)
         popup.open()
 

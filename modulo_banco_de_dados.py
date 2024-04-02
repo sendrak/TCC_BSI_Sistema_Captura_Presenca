@@ -158,7 +158,7 @@ class VisualizadorImagens(BoxLayout):
 
 class VisualizadorImagensApp(App):
     def build(self):
-        self.title = 'Banco de Imagens'
+        self.title = 'Instituto Federal Fluminense - Banco de Imagens'
         self.icon = 'Imagens/icone_camera.png'
         return VisualizadorImagens()
 
