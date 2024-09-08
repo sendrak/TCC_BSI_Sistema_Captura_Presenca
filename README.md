@@ -8,6 +8,7 @@ Versão utilizada: python --version 3.8.10
 CMAKE: pip install cmake
 
 DLIB: pip install dlib-19.19.0-cp38-cp38-win_amd64.whl
+*Com o CMD aberto na pasta onde o arquivo está presente
 
 Face Recognition: pip install face_recognition
 
