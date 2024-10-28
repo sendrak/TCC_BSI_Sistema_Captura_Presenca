@@ -30,7 +30,7 @@ class ConteudoCadastroPessoas(BoxLayout):
 
         self.orientation = 'horizontal'
 
-        # Adicione a câmera à coluna da esquerda
+        # Adicionando camera e botões a tela
         self.container_esquerda = BoxLayout(orientation='vertical', padding=5, spacing=5)
         self.camera = Camera(resolution=(640, 480), play=True)
         self.camera.index = select_cam

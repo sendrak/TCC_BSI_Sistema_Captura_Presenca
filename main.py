@@ -14,7 +14,7 @@ class MainMenu(BoxLayout):
         # BoxLayout para conter os botões e logo
         container_central = BoxLayout(orientation='vertical', padding=5, spacing=5)
 
-        # Adicione um widget de imagem no topo
+        # Logotipo do IFF no topo
         image = Image(source="Imagens/logo_iff_campus_centro.png")
         container_central.add_widget(image)
 
@@ -63,7 +63,7 @@ class MainMenu(BoxLayout):
 
         container_central.add_widget(container_config_fechar)
 
-        # Adicione o BoxLayout com a imagem e os botões ao MainMenu
+        # Adicionando o BoxLayout com a imagem e os botões ao MainMenu
         self.add_widget(container_central)
 
     def open_cadastro(self, instance):

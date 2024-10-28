@@ -37,7 +37,7 @@ class CapturaPresencaImagem(App):
         self.file_chooser.bind(on_submit=self.load_image)
         left_column.add_widget(self.file_chooser)
 
-        # Adicione os novos widgets aqui
+        # Adição dos widgets na tela
         self.label_date = Label(text='Data:')
         self.label_text_input1 = Label(text='Curso:')
         self.label_text_input2 = Label(text='Disciplina:')
@@ -51,7 +51,7 @@ class CapturaPresencaImagem(App):
         generate_button.bind(on_press=self.generate_presence)
         close_button.bind(on_press=self.close_popup)
 
-        # Adicione os novos widgets à coluna da direita
+        # Adição dos widgets na coluna da direita
         right_column = BoxLayout(orientation='vertical', spacing=10)
         right_column.add_widget(self.label_date)
         right_column.add_widget(self.date_input)
@@ -144,17 +144,17 @@ class CapturaPresencaImagem(App):
         return known_faces, known_names
 
     def get_pessoas_presentes(self, image_path, known_faces, known_names):
-        # Carregue a imagem selecionada
+        # Buscando a imagem selecionada
         image = face_recognition.load_image_file(image_path)
 
-        # Encontre rostos na imagem
+        # Busca de rostos na imagem
         face_locations = face_recognition.face_locations(image)
         face_encodings = face_recognition.face_encodings(image, face_locations)
 
         recognized_people = []
 
         for face_encoding in face_encodings:
-            # Compare a face com as imagens das pessoas registradas
+            # Comparação de face com as imagens das pessoas registradas
             matches = face_recognition.compare_faces(known_faces, face_encoding)
             if any(matches):
                 face_index = matches.index(True)

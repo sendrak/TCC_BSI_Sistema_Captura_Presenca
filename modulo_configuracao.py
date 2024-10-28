@@ -19,7 +19,7 @@ class ConfigScreen(BoxLayout):
         image = Image(source="Imagens/logo_iff_campus_centro.png")
         self.add_widget(image)
 
-        # Crie rótulos e caixas de entrada para os parâmetros
+        # Label e campos de entrada para os parâmetros
         self.select_cam_label = Label(text="Selecione a Camera (Padrão Windows = 0):", size_hint_y=None, height=30)
         self.select_cam_input = TextInput(size_hint_y=None, height=30)
         self.add_widget(self.select_cam_label)
@@ -41,7 +41,7 @@ class ConfigScreen(BoxLayout):
         self.add_widget(self.select_curso_label)
         self.add_widget(self.select_curso_input)
 
-        # Carregue os parâmetros do arquivo config.txt, se existir
+        # Busca o arquivo TXT e carrega os parâmetros
         try:
             with open("Configuracoes/config.txt", "r") as config_file:
                 config = json.load(config_file)
@@ -52,18 +52,18 @@ class ConfigScreen(BoxLayout):
         except FileNotFoundError:
             pass
 
-        # Crie um botão para salvar as configurações
+        # Botão de Salvar
         save_button = Button(text="Salvar Configurações", size_hint_y=None, height=40)
         save_button.bind(on_press=self.save_config)
         self.add_widget(save_button)
 
-        # Crie um botão para fechar a tela
+        # Botão de Fechar
         close_button = Button(text="Fechar", size_hint_y=None, height=40)
         close_button.bind(on_press=self.close_app)
         self.add_widget(close_button)
 
     def save_config(self, instance):
-        # Salve os parâmetros no arquivo config.txt
+        # Salvanmento dos parâmetros no arquivo config.txt
         config = {
             "select_cam": self.select_cam_input.text,
             "select_matricula": self.select_matricula_input.text,
@@ -84,18 +84,18 @@ class ConfigScreen(BoxLayout):
         # Abra uma popup de confirmação com os novos valores
         popup = Popup(title="Configurações Alteradas", size_hint=(0.7, 0.7))
 
-        # Crie uma BoxLayout para organizar os widgets dentro da popup
+        # BoxLayout para organizar os widgets dentro da popup
         popup_content = BoxLayout(orientation='vertical')
 
-        # Adicione um Label com a mensagem
+        # Label com a mensagem
         popup_content.add_widget(Label(text=message))
 
-        # Adicione um botão "Fechar Popup" para fechar a popup
+        # Botão "Fechar Popup" para fechar a popup
         close_popup_button = Button(text="Fechar Popup", size_hint_y=None, height=40)
         close_popup_button.bind(on_press=popup.dismiss)
         popup_content.add_widget(close_popup_button)
 
-        # Configure o conteúdo da popup
+        # Conteúdo da popup
         popup.content = popup_content
 
         popup.open()
