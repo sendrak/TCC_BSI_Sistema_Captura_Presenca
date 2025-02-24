@@ -85,7 +85,7 @@ class VisualizadorImagens(BoxLayout):
 
     def __init__(self, **kwargs):
         super(VisualizadorImagens, self).__init__(**kwargs)
-        self.load_images_from_directory("./Pessoas")
+        self.load_images_from_directory("./Alunos")
         self.current_index = 0
         self.update_image()  # Exibe a primeira imagem ao iniciar o programa
 

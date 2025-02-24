@@ -256,7 +256,7 @@ class CapturaPresencaVideo(App):
         sheet.cell(row=1, column=3, value="Status")
 
         # Diretório de imagens das pessoas registradas
-        people_dir = "Pessoas"
+        people_dir = "Alunos"
 
         # Carregar imagens das pessoas registradas
         self.known_faces, self.known_names = self.load_known_faces(people_dir)

@@ -23,7 +23,7 @@ class ConteudoCadastroPessoas(BoxLayout):
                 config = json.load(config_file)
                 select_cam = config.get("select_cam", "")
                 # select_matricula = config.get("select_matricula", "")
-                # select_disciplina = config.get("select_disciplina", "")
+                select_disciplina = config.get("select_disciplina", "")
                 # select_curso = config.get("select_curso", "")
         except FileNotFoundError:
             pass
@@ -37,12 +37,16 @@ class ConteudoCadastroPessoas(BoxLayout):
 
         self.container_direita = BoxLayout(orientation='vertical', padding=5, spacing=5)
 
+        # Botão Pause / Play
         self.toggle_button = ToggleButton(text='Pause / Play', size_hint_y=None, height='48dp')
         self.toggle_button.bind(on_press=self.alternar_camera)
         self.container_direita.add_widget(self.toggle_button)
 
         self.name_input = TextInput(size_hint_y=None, height='48dp', hint_text='Nome da pessoa')
         self.container_direita.add_widget(self.name_input)
+
+        self.disciplina_input = TextInput(size_hint_y=None, height='48dp', hint_text='Disciplina', text=select_disciplina)
+        self.container_direita.add_widget(self.disciplina_input)
 
         self.matricula_input = TextInput(size_hint_y=None, height='48dp', hint_text='Matrícula')
         self.container_direita.add_widget(self.matricula_input)
@@ -57,7 +61,7 @@ class ConteudoCadastroPessoas(BoxLayout):
 
         self.add_widget(self.container_direita)
 
-        self.caminho_salvar = "./Pessoas"  # Local de salvamento das imagens
+        self.caminho_salvar = "./Alunos"  # Local de salvamento das imagens
 
     def alternar_camera(self, instance):
         self.camera.play = not self.camera.play

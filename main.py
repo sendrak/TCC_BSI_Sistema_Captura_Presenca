@@ -18,10 +18,10 @@ class MainMenu(BoxLayout):
         image = Image(source="Imagens/logo_iff_campus_centro.png")
         container_central.add_widget(image)
 
-        # Botões de monitoramento desativado
-        # button_monitoramento = Button(text="Monitoramento Multicâmeras", size=(200, 50))
+        # Botões de monitoramento (Trabalho Futuro)
+        button_monitoramento = Button(text="Monitoramento Multicâmeras(Trabalho Futuro)", size=(200, 50))
         # button_monitoramento.bind(on_release=self.open_monitoramento)
-        # container_central.add_widget(button_monitoramento)
+        container_central.add_widget(button_monitoramento)
 
         button_cadastro_alunos = Button(text="Cadastro de Alunos", size=(200, 50))
         button_cadastro_alunos.bind(on_release=self.open_cadastro)

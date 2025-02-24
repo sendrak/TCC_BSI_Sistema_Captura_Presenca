@@ -64,7 +64,7 @@ class ConteudoCadastroPessoas(BoxLayout):
 
         self.add_widget(self.container_direita)
 
-        self.caminho_salvar = "./ImagensParaPresenca"  # Local de salvamento das imagens
+        self.caminho_salvar = "./CapturasDeTurma"  # Local de salvamento das imagens
 
     def alternar_camera(self, instance):
         self.camera.play = not self.camera.play
