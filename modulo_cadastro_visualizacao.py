@@ -1,167 +1,93 @@
-import os
+import json
+
 from kivy.app import App
-from kivy.lang import Builder
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.togglebutton import ToggleButton
+from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
-from kivy.uix.image import Image
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
-from kivy.properties import StringProperty
+from kivy.uix.image import Image
+from kivy.core.window import Window
+from kivy.uix.camera import Camera
+import os
 
-Builder.load_string('''
-<VisualizadorImagens>:
-    BoxLayout:
-        orientation: 'vertical'
-
-        Image:
-            id: image_view
-            source: root.current_image
-            size_hint_y: 0.8
-
-        Label:
-            id: image_name_label
-            text: root.current_filename
-            size_hint_y: 0.1
-
-        BoxLayout:
-            size_hint_y: 0.1
-
-            Button:
-                text: 'Anterior'
-                on_press: root.show_previous_image()
-
-            Button:
-                text: 'Próximo'
-                on_press: root.show_next_image()
-
-            Button:
-                text: 'Excluir Cadastro'
-                on_press: root.show_delete_confirmation_popup()
-
-            Button:
-                text: 'Fechar'
-                on_press: app.stop()
-
-<DeleteConfirmationContent>:
-    orientation: 'vertical'
-    Image:
-        id: delete_image_view
-        source: root.current_image
-    Label:
-        id: delete_image_name_label
-        text: root.current_filename
-    Button:
-        text: 'Excluir Cadastro'
-        id: confirm_button
-    Button:
-        text: 'Cancelar'
-        id: cancel_button
-
-<NoImagesContent>:
-    orientation: 'vertical'
-    Label:
-        text: 'Não existe imagem cadastrada no Banco de Imagens'
-    Button:
-        text: 'Ok'
-        id: ok_button
-''')
-
-
-class DeleteConfirmationContent(BoxLayout):
-    current_image = StringProperty("")  # Adicione essa propriedade
-    current_filename = StringProperty("")  # Adicione essa propriedade
-
+class VisualizacaoCadastro(BoxLayout):
     def __init__(self, **kwargs):
-        super(DeleteConfirmationContent, self).__init__(**kwargs)
-        self.ids.delete_image_view.source = self.current_image
-        self.ids.delete_image_name_label.text = self.current_filename
+        super(VisualizacaoCadastro, self).__init__(**kwargs)
+        self.orientation = 'horizontal'
 
+        # Container da esquerda
+        self.container_esquerda = BoxLayout(orientation='vertical', padding=5, spacing=5)
 
-class NoImagesContent(BoxLayout):
-    pass
+        # Subcontainer de Opções
+        self.sub_container_esquerda = BoxLayout(orientation='horizontal', padding=5, spacing=5)
 
-class VisualizadorImagens(BoxLayout):
-    image_files = []
+        # Botão Anterior
 
-    def __init__(self, **kwargs):
-        super(VisualizadorImagens, self).__init__(**kwargs)
-        self.load_images_from_directory("./Alunos")
-        self.current_index = 0
-        self.update_image()  # Exibe a primeira imagem ao iniciar o programa
+        # Botão Próximo
 
-    @property
-    def current_image(self):
-        if len(self.image_files) > 0:
-            return self.image_files[self.current_index]
+        # Exibição da Imagem do Aluno
+
+        # Labels de Identificação
+
+        # Adicionar botóes Parte Esquerda
+        self.add_widget(self.container_esquerda)
+
+        # ----------- Container da Direita
+        self.container_direita = BoxLayout(orientation='vertical', padding=5, spacing=5)
+
+        # Dropdown selecao de disciplina
+        # self.disciplina_input = TextInput(size_hint_y=None, height='48dp', hint_text='Disciplina', text=select_disciplina)
+        # self.container_direita.add_widget(self.disciplina_input)
+
+        # Campo de Nome
+        # self.name_input = TextInput(size_hint_y=None, height='48dp', hint_text='Nome da pessoa')
+        # self.container_direita.add_widget(self.name_input)
+
+        # self.matricula_input = TextInput(size_hint_y=None, height='48dp', hint_text='Matrícula')
+        # self.container_direita.add_widget(self.matricula_input)
+
+        # Atualizar Cadastro
+
+        # Fechar Tela
+        self.fechar_button = Button(text='Fechar', size_hint_y=None, height='48dp')
+        self.fechar_button.bind(on_release=self.stop_app)
+        self.container_direita.add_widget(self.fechar_button)
+
+        # Adicionar botóes Parte Direita
+        self.add_widget(self.container_direita)
+
+    def capture(self, instance):
+        name = self.name_input.text.strip()
+        matricula = self.matricula_input.text.strip()
+        disciplina = self.disciplina_input.text.strip()
+        if not name or not matricula or not disciplina:
+            print("Por favor, preencha o nome disciplina e matrícula da pessoa antes de capturar.")
+            return
+
+        if not os.path.exists(self.caminho_salvar):
+            os.makedirs(self.caminho_salvar)
+            filename = os.path.join(self.caminho_salvar, f"{disciplina}_{name}_{matricula}.png")
         else:
-            return ""
-
-    @property
-    def current_filename(self):
-        if len(self.image_files) > 0:
-            return os.path.basename(self.current_image)
-        else:
-            return ""
-
-    def load_images_from_directory(self, directory):
-        for filename in os.listdir(directory):
-            if filename.endswith(".png"):
-                self.image_files.append(os.path.join(directory, filename))
-        self.image_files = sorted(self.image_files)
-
-    def show_previous_image(self):
-        if len(self.image_files) > 0:
-            if self.current_index > 0:
-                self.current_index -= 1
-            else:
-                self.current_index = len(self.image_files) - 1
-            self.update_image()
-
-    def show_next_image(self):
-        if len(self.image_files) > 0:
-            if self.current_index < len(self.image_files) - 1:
-                self.current_index += 1
-            else:
-                self.current_index = 0
-            self.update_image()
-
-    def show_delete_confirmation_popup(self):
-        if len(self.image_files) > 0:
-            content = DeleteConfirmationContent(current_image=self.current_image,
-                                                current_filename=self.current_filename)
-            popup = Popup(title='Excluir Foto', content=content, size_hint=(0.6, 0.6))
-            content.ids.confirm_button.bind(on_release=lambda x: self.delete_current_image(popup))
-            content.ids.cancel_button.bind(on_release=popup.dismiss)
-            popup.open()
-        else:
-            content = NoImagesContent()
-            popup = Popup(title='Aviso', content=content, size_hint=(0.6, 0.3))
-            content.ids.ok_button.bind(on_release=popup.dismiss)
-            popup.open()
-
-    def delete_current_image(self, popup):
-        os.remove(self.current_image)
-        self.image_files.pop(self.current_index)
-        if self.current_index >= len(self.image_files):
-            self.current_index = max(len(self.image_files) - 1, 0)
-        self.update_image()
-        popup.dismiss()
-
-    def update_image(self, *args):
-        if len(self.image_files) > 0:
-            self.ids['image_view'].source = self.current_image
-            self.ids['image_name_label'].text = self.current_filename
-        else:
-            self.ids['image_view'].source = ""
-            self.ids['image_name_label'].text = ""
+            filename = os.path.join(self.caminho_salvar, f"{disciplina}_{name}_{matricula}.png")
 
 
-class VisualizadorImagensApp(App):
+        self.camera.export_to_png(filename)  # Alterado para usar a câmera do self
+        self.show_capture_popup(filename)
+
+
+
+    def stop_app(self, instance):
+        App.get_running_app().stop()
+
+class VisualizacaoCadastroApp(App):
     def build(self):
-        self.title = 'Instituto Federal Fluminense - Banco de Imagens'
+        Window.maximize()
+        self.title = 'Instituto Federal Fluminense - Cadastro de Alunos'
         self.icon = 'Imagens/icone_camera.png'
-        return VisualizadorImagens()
+        return VisualizacaoCadastro()
 
 
 if __name__ == '__main__':
-    VisualizadorImagensApp().run()
+    VisualizacaoCadastroApp().run()

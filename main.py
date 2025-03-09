@@ -27,7 +27,7 @@ class MainMenu(BoxLayout):
         button_cadastro_alunos.bind(on_release=self.open_cadastro)
         container_central.add_widget(button_cadastro_alunos)
 
-        button_banco_de_dados = Button(text="Banco de Faces Cadastradas", size=(200, 50))
+        button_banco_de_dados = Button(text="Banco de Dados - Alunos Cadastrados", size=(200, 50))
         button_banco_de_dados.bind(on_release=self.open_database)
         container_central.add_widget(button_banco_de_dados)
 
