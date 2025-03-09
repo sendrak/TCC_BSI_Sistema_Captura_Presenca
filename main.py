@@ -79,7 +79,7 @@ class MainMenu(BoxLayout):
     def open_database(self, instance):
         try:
             current_directory = os.path.dirname(os.path.abspath(__file__))
-            app_path = os.path.join(current_directory, 'modulo_banco_de_dados.py')
+            app_path = os.path.join(current_directory, 'modulo_cadastro_visualizacao.py')
             print("Abrindo:", app_path)
             process = subprocess.Popen(['python', app_path])
             self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
