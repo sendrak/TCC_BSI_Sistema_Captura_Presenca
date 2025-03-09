@@ -42,11 +42,14 @@ class ConteudoCadastroPessoas(BoxLayout):
         self.toggle_button.bind(on_press=self.alternar_camera)
         self.container_direita.add_widget(self.toggle_button)
 
+        #Caixa de Texto Disciplina, vem carregada com o valor das configurações
+        self.disciplina_input = TextInput(size_hint_y=None, height='48dp', hint_text='Disciplina', text=select_disciplina)
+        self.container_direita.add_widget(self.disciplina_input)
+
         self.name_input = TextInput(size_hint_y=None, height='48dp', hint_text='Nome da pessoa')
         self.container_direita.add_widget(self.name_input)
 
-        self.disciplina_input = TextInput(size_hint_y=None, height='48dp', hint_text='Disciplina', text=select_disciplina)
-        self.container_direita.add_widget(self.disciplina_input)
+
 
         self.matricula_input = TextInput(size_hint_y=None, height='48dp', hint_text='Matrícula')
         self.container_direita.add_widget(self.matricula_input)
@@ -61,7 +64,8 @@ class ConteudoCadastroPessoas(BoxLayout):
 
         self.add_widget(self.container_direita)
 
-        self.caminho_salvar = "./Alunos"  # Local de salvamento das imagens
+        # Local de salvamento das imagens - Por Disciplina
+        self.caminho_salvar = "./Alunos/" + self.disciplina_input.text.strip()
 
     def alternar_camera(self, instance):
         self.camera.play = not self.camera.play
@@ -69,11 +73,18 @@ class ConteudoCadastroPessoas(BoxLayout):
     def capture(self, instance):
         name = self.name_input.text.strip()
         matricula = self.matricula_input.text.strip()
-        if not name or not matricula:
-            print("Por favor, preencha o nome e a matrícula da pessoa antes de capturar.")
+        disciplina = self.disciplina_input.text.strip()
+        if not name or not matricula or not disciplina:
+            print("Por favor, preencha o nome disciplina e matrícula da pessoa antes de capturar.")
             return
 
-        filename = os.path.join(self.caminho_salvar, f"{name}_{matricula}.png")
+        if not os.path.exists(self.caminho_salvar):
+            os.makedirs(self.caminho_salvar)
+            filename = os.path.join(self.caminho_salvar, f"{disciplina}_{name}_{matricula}.png")
+        else:
+            filename = os.path.join(self.caminho_salvar, f"{disciplina}_{name}_{matricula}.png")
+
+
         self.camera.export_to_png(filename)  # Alterado para usar a câmera do self
         self.show_capture_popup(filename)
 
