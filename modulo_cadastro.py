@@ -15,6 +15,7 @@ import os
 class ConteudoCadastroPessoas(BoxLayout):
     def __init__(self, **kwargs):
         super(ConteudoCadastroPessoas, self).__init__(**kwargs)
+        self.caminho_salvar = None
         self.orientation = 'horizontal'
 
         # Selecionando a câmera a partir das configurações
@@ -65,7 +66,8 @@ class ConteudoCadastroPessoas(BoxLayout):
         self.add_widget(self.container_direita)
 
         # Local de salvamento das imagens - Por Disciplina
-        self.caminho_salvar = "./Alunos/" + self.disciplina_input.text.strip()
+
+
 
     def alternar_camera(self, instance):
         self.camera.play = not self.camera.play
@@ -77,6 +79,9 @@ class ConteudoCadastroPessoas(BoxLayout):
         if not name or not matricula or not disciplina:
             print("Por favor, preencha o nome disciplina e matrícula da pessoa antes de capturar.")
             return
+
+        self.caminho_salvar = "./Alunos/" + self.disciplina_input.text.strip()
+        print(f"LOG: Caminho de Salvamento Definido: {self.caminho_salvar}")
 
         if not os.path.exists(self.caminho_salvar):
             os.makedirs(self.caminho_salvar)
