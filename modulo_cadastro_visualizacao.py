@@ -24,11 +24,11 @@ class VisualizacaoCadastro(BoxLayout):
         self.sub_container_esquerda = BoxLayout(orientation='horizontal', padding=5, spacing=5)
 
         # Botão Anterior
-        button_anterior = Button(text="Captura de Foto para Presença da Turma", size=(5, 5))
+        button_anterior = Button(text="Anterior", size=(5, 5))
         self.sub_container_esquerda.add_widget(button_anterior)
 
         # Botão Próximo
-        button_proximo = Button(text="Captura de Foto para Presença da Turma", size=(5, 5))
+        button_proximo = Button(text="Próximo", size=(5, 5))
         self.sub_container_esquerda.add_widget(button_proximo)
 
         # Adicionar botões Parte Esquerda
