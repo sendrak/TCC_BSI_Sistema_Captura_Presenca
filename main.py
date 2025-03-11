@@ -21,7 +21,15 @@ class MainMenu(BoxLayout):
         # Botões de monitoramento (Trabalho Futuro)
         button_monitoramento = Button(text="Monitoramento Multicâmeras(Trabalho Futuro)", size=(200, 50))
         # button_monitoramento.bind(on_release=self.open_monitoramento)
-        container_central.add_widget(button_monitoramento)
+
+        button_submete_presenca = Button(text="Submeter Presença para IFF Acadêmico(Trabalho Futuro)")
+        button_submete_presenca.bind(on_release=self.open_submete_presenca)
+
+        # Botão duplo em linha - trabalho futuro
+        container_trabalho_futuro = BoxLayout(orientation='horizontal', spacing=5)
+        container_trabalho_futuro.add_widget(button_monitoramento)
+        container_trabalho_futuro.add_widget(button_submete_presenca)
+        container_central.add_widget(container_trabalho_futuro)
 
         button_cadastro_alunos = Button(text="Cadastro de Alunos", size=(200, 50))
         button_cadastro_alunos.bind(on_release=self.open_cadastro)
@@ -30,10 +38,6 @@ class MainMenu(BoxLayout):
         button_banco_de_dados = Button(text="Banco de Dados - Alunos Cadastrados", size=(200, 50))
         button_banco_de_dados.bind(on_release=self.open_database)
         container_central.add_widget(button_banco_de_dados)
-
-        button_submete_presenca = Button(text="Submeter Presença para IFF Acadêmico(Trabalho Futuro)")
-        button_submete_presenca.bind(on_release=self.open_submete_presenca)
-        container_central.add_widget(button_submete_presenca)
 
         button_captura_video = Button(text="Captura de Presença Por Vídeo em Tempo Real", size=(200, 50))
         button_captura_video.bind(on_release=self.open_captura_video)

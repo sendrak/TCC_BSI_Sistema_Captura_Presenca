@@ -8,7 +8,7 @@ from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.core.window import Window
-from kivy.uix.camera import Camera
+from helper_funcoes_reutilizadas import helper_busca_disciplinas
 
 
 class VisualizacaoCadastro(BoxLayout):
@@ -23,26 +23,30 @@ class VisualizacaoCadastro(BoxLayout):
         # ----------- Container da Esquerda
         self.container_botoes_esquerda = BoxLayout(orientation='vertical', padding=5, spacing=5)
 
+        # ----------- Dropdown Seleção de Disciplina
+
         # Inicializando o TextInput para a Disciplina
-        self.disciplina_input = TextInput(size_hint_y=None, height='48dp', hint_text='Selecione a Disciplina')
+        self.disciplina_input = TextInput(size_hint_y=None, height='48dp', hint_text='Selecione a Disciplina', readonly=True)
 
         # Dropdown de seleção de disciplina, lista criada a partir das pastas dentro de "Alunos"
-        lista_disciplinas = self.lista_de_disciplinas()
+        helper = helper_busca_disciplinas()
+        lista_disciplinas = helper.lista_de_disciplinas_cadastradas()
         dropdown = DropDown()
 
         # Criação do botão no DropDown com base na lista de disciplinas
         for disciplina in lista_disciplinas:
             btn = Button(text=disciplina, size_hint_y=None, height=44)
-            btn.bind(on_release=self.selecionar_disciplina(dropdown))
+            btn.bind(on_release=self.selecionar_disciplina(dropdown, self.disciplina_input))
             dropdown.add_widget(btn)
 
         # Associar o DropDown ao TextInput
         self.disciplina_input.bind(
-            on_touch_down=lambda instance, touch: dropdown.open(self.disciplina_input) if instance.collide_point(
-                *touch.pos) else None)
+            on_touch_down=lambda instance, touch: dropdown.open(self.disciplina_input) if instance.collide_point(*touch.pos) else None)
 
         # Adiciona o TextInput ao layout
         self.container_botoes_esquerda.add_widget(self.disciplina_input)
+
+        # ----------- Fim do Dropdown Seleção de Disciplina
 
         # Botão de Fechar Tela
         self.fechar_button = Button(text='Fechar', size_hint_y=None, height='48dp')
@@ -138,47 +142,50 @@ class VisualizacaoCadastro(BoxLayout):
                 if os.path.isfile(caminho_completo) and item.lower().endswith(('.png')):
                     self.imagens.append(caminho_completo)
 
+        # Caso não haja imagens, resetar as variáveis relacionadas à imagem, nome e matrícula
+        if not self.imagens:
+            self.imagem_display.source = ''
+            self.nome_label.text = "Nome: N/A"
+            self.matricula_label.text = "Matricula: N/A"
+        else:
+            # Se houver imagens, resetar o índice da imagem atual
+            self.imagem_atual_index = 0
+            self.atualizar_imagem()  # Atualiza a imagem imediatamente
+
     # Atualiza a imagem exibida
     def atualizar_imagem(self):
-        if self.imagens and 0 <= self.imagem_atual_index < len(self.imagens):  # Verificação posição no array
+        # Verifica se há imagens e se o índice atual está dentro do intervalo válido
+        if self.imagens and 0 <= self.imagem_atual_index < len(self.imagens):
             self.imagem_display.source = self.imagens[self.imagem_atual_index]
             self.imagem_display.reload()  # Força o Kivy a recarregar a imagem
             self.update_label_aluno()  # Atualiza os labels de nome e matrícula ao trocar de imagem
+        else:
+            # Caso não haja imagens para exibir, limpa a tela
+            self.imagem_display.source = ''  # Remove a imagem
+            self.nome_label.text = "Nome: N/A"
+            self.matricula_label.text = "Matricula: N/A"
 
     # Anterior
     def mudar_imagem_anterior(self, instance):
         if self.selecionou_disciplina and self.imagens:
-            self.imagem_atual_index = (self.imagem_atual_index - 1) % len(self.imagens)
+            # Se houver apenas uma imagem, a navegação para anterior não faz sentido, então apenas mostra a mesma
+            if len(self.imagens) > 1:
+                self.imagem_atual_index = (self.imagem_atual_index - 1) % len(self.imagens)
+            # Atualiza a imagem após navegação
             self.atualizar_imagem()
 
     # Próximo
     def mudar_imagem_proxima(self, instance):
         if self.selecionou_disciplina and self.imagens:
-            self.imagem_atual_index = (self.imagem_atual_index + 1) % len(self.imagens)
+            # Se houver apenas uma imagem, a navegação para próxima não faz sentido, então apenas mostra a mesma
+            if len(self.imagens) > 1:
+                self.imagem_atual_index = (self.imagem_atual_index + 1) % len(self.imagens)
+            # Atualiza a imagem após navegação
             self.atualizar_imagem()
 
-    # Busca a Lista de Disciplinas pelas pastas criadas
-    def lista_de_disciplinas(self):
-        lista_disciplinas = []
-        self.caminho_pasta = 'Alunos'
-
-        # Verifica se o caminho da pasta existe
-        if os.path.exists(self.caminho_pasta):
-            # Itera pelas subpastas do diretório
-            for item in os.listdir(self.caminho_pasta):
-                caminho_completo = os.path.join(self.caminho_pasta, item)
-
-                # Verifica se o item é uma pasta
-                if os.path.isdir(caminho_completo):
-                    lista_disciplinas.append(item)
-        else:
-            print(f"A pasta {self.caminho_pasta} não existe.")
-
-        return lista_disciplinas
-
-    def selecionar_disciplina(self, dropdown):
+    def selecionar_disciplina(self, dropdown, input_disciplina):
         def update_text(instance):
-            self.disciplina_input.text = instance.text
+            input_disciplina.text = instance.text
             dropdown.dismiss()  # Fecha o dropdown
 
         return update_text

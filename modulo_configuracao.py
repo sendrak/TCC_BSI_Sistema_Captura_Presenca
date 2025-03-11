@@ -26,17 +26,17 @@ class ConfigScreen(BoxLayout):
         self.add_widget(self.select_cam_input)
 
         # Novo Label e TextInput para a Matrícula
-        self.select_matricula_label = Label(text="Informe a Matrícula Padrão:", size_hint_y=None, height=30)
+        self.select_matricula_label = Label(text="Informe a Matrícula de Professor Padrão: (Trabalho Futuro)", size_hint_y=None, height=30)
         self.select_matricula_input = TextInput(size_hint_y=None, height=30)
         self.add_widget(self.select_matricula_label)
         self.add_widget(self.select_matricula_input)
 
-        self.select_disciplina_label = Label(text="Informe a Disciplina Padrão:", size_hint_y=None, height=30)
-        self.select_disciplina_input = TextInput(size_hint_y=None, height=30)
-        self.add_widget(self.select_disciplina_label)
-        self.add_widget(self.select_disciplina_input)
+        # self.select_disciplina_label = Label(text="Informe a Disciplina Padrão:", size_hint_y=None, height=30)
+        # self.select_disciplina_input = TextInput(size_hint_y=None, height=30)
+        # self.add_widget(self.select_disciplina_label)
+        # self.add_widget(self.select_disciplina_input)
 
-        self.select_curso_label = Label(text="Informe o Curso Padrão:", size_hint_y=None, height=30)
+        self.select_curso_label = Label(text="Informe o Curso Padrão: (Trabalho Futuro)", size_hint_y=None, height=30)
         self.select_curso_input = TextInput(size_hint_y=None, height=30)
         self.add_widget(self.select_curso_label)
         self.add_widget(self.select_curso_input)
@@ -47,7 +47,7 @@ class ConfigScreen(BoxLayout):
                 config = json.load(config_file)
                 self.select_cam_input.text = config.get("select_cam", "")
                 self.select_matricula_input.text = config.get("select_matricula", "")
-                self.select_disciplina_input.text = config.get("select_disciplina", "")
+                # self.select_disciplina_input.text = config.get("select_disciplina", "")
                 self.select_curso_input.text = config.get("select_curso", "")
         except FileNotFoundError:
             pass
