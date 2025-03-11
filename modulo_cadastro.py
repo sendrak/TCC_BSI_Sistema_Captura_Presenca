@@ -123,7 +123,7 @@ class ConteudoCadastroPessoas(BoxLayout):
 class CadastroDePessoasApp(App):
     def build(self):
         Window.maximize()
-        self.title = 'Instituto Federal Fluminense - Cadastro de Alunos'
+        self.title = 'Instituto Federal Fluminense - Bando de Dados - Alunos Cadastrados'
         self.icon = 'Imagens/icone_camera.png'
         return ConteudoCadastroPessoas()
 
