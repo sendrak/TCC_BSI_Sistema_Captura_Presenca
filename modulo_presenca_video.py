@@ -71,13 +71,16 @@ class CapturaPresencaVideo(App):
         lista_disciplinas = helper.lista_de_disciplinas_cadastradas()
         dropdown = DropDown()
 
-        # Criação do botão no DropDown com base na lista de disciplinas
+        # Criação do botão no DropDown com base na lista de disciplinas - Não foi possível reutilizar a função
         for disciplina in lista_disciplinas:
             btn = Button(text=disciplina, size_hint_y=None, height=44)
             # Ajuste aqui para garantir que a disciplina seja atribuída no text_input2
             btn.bind(on_release=lambda btn: (setattr(self, 'select_disciplina', btn.text),
                                              setattr(self.disciplina_input, 'text', btn.text),
                                              dropdown.dismiss()))
+
+
+
             dropdown.add_widget(btn)
 
         # Associar o DropDown ao TextInput
