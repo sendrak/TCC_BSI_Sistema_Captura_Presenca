@@ -1,9 +1,9 @@
 import json
-
 import cv2
 import face_recognition
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.dropdown import DropDown
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
@@ -14,8 +14,8 @@ from kivy.graphics.texture import Texture
 from datetime import datetime
 from openpyxl import Workbook
 import os
-
 from openpyxl.reader.excel import load_workbook
+from helper_funcoes_reutilizadas import helper_busca_disciplinas
 
 
 class CapturaPresencaVideo(App):
@@ -60,20 +60,40 @@ class CapturaPresencaVideo(App):
         date_input = TextInput(hint_text='Data', text=data_de_hoje)
 
         text_input1 = TextInput(hint_text='Curso', text=select_curso)
-        text_input2 = TextInput(hint_text='Disciplina', text=select_disciplina)
 
-        start_button = Button(text='Iniciar Captura de Presença')
-        start_button.bind(on_press=self.inicia_processo_presenca)
+        # ----------- Dropdown Seleção de Disciplina
 
-        close_button = Button(text='Fechar')
-        close_button.bind(on_press=self.close_app)
+        # Inicializando o TextInput para a Disciplina
+        self.disciplina_input = TextInput(size_hint_y=None, height='48dp', hint_text='Selecione a Disciplina',
+                                          readonly=True)
+        # Dropdown de seleção de disciplina, lista criada a partir das pastas dentro de "Alunos"
+        helper = helper_busca_disciplinas()
+        lista_disciplinas = helper.lista_de_disciplinas_cadastradas()
+        dropdown = DropDown()
 
+        # Criação do botão no DropDown com base na lista de disciplinas
+        for disciplina in lista_disciplinas:
+            btn = Button(text=disciplina, size_hint_y=None, height=44)
+            # Ajuste aqui para garantir que a disciplina seja atribuída no text_input2
+            btn.bind(on_release=lambda btn: (setattr(self, 'select_disciplina', btn.text),
+                                             setattr(self.disciplina_input, 'text', btn.text),
+                                             dropdown.dismiss()))
+            dropdown.add_widget(btn)
+
+        # Associar o DropDown ao TextInput
+        self.disciplina_input.bind(
+            on_touch_down=lambda instance, touch: dropdown.open(self.disciplina_input) if instance.collide_point(
+                *touch.pos) else None)
+
+        # Adiciona o TextInput ao layout
         col2_layout.add_widget(label_date)
         col2_layout.add_widget(date_input)
         col2_layout.add_widget(label_text_input1)
         col2_layout.add_widget(text_input1)
         col2_layout.add_widget(label_text_input2)
-        col2_layout.add_widget(text_input2)
+        col2_layout.add_widget(self.disciplina_input)
+
+        # ----------- Fim do Dropdown Seleção de Disciplina
 
         # Campo para definir o tempo do temporizador
         self.timer_input = TextInput(hint_text='Tempo (segundos)', input_filter='int')
@@ -81,6 +101,12 @@ class CapturaPresencaVideo(App):
         label_timer_input = Label(text='Defina o tempo de captura em segundos:')
         col2_layout.add_widget(label_timer_input)
         col2_layout.add_widget(self.timer_input)
+
+        start_button = Button(text='Iniciar Captura de Presença')
+        start_button.bind(on_press=self.inicia_processo_presenca)
+
+        close_button = Button(text='Fechar')
+        close_button.bind(on_press=self.close_app)
 
         col2_layout.add_widget(start_button)
         col2_layout.add_widget(close_button)
@@ -100,7 +126,6 @@ class CapturaPresencaVideo(App):
 
         self.date_input = date_input
         self.text_input1 = text_input1
-        self.text_input2 = text_input2
 
         return layout
 
@@ -129,7 +154,7 @@ class CapturaPresencaVideo(App):
             # Verifica se o arquivo Excel já existe
             data = self.date_input.text
             curso = self.text_input1.text
-            disciplina = self.text_input2.text
+            disciplina = self.select_disciplina  # Usando o valor da disciplina selecionada
             filename = f"{curso}_{disciplina}_{data}.xlsx"
             file_path = os.path.join("PresencasCapturadas", filename)
 
@@ -224,7 +249,7 @@ class CapturaPresencaVideo(App):
         # Diretório do arquivo Excel
         data = self.date_input.text
         curso = self.text_input1.text
-        disciplina = self.text_input2.text
+        disciplina = self.select_disciplina  # Usando a disciplina atual
         filename = f"{curso}_{disciplina}_{data}.xlsx"
         file_path = os.path.join("PresencasCapturadas", filename)
 
@@ -244,7 +269,7 @@ class CapturaPresencaVideo(App):
     def cria_excel(self, instance):
         data = self.date_input.text
         curso = self.text_input1.text
-        disciplina = self.text_input2.text
+        disciplina = self.select_disciplina  # Usando a disciplina selecionada
         filename = f"{curso}_{disciplina}_{data}.xlsx"
 
         workbook = Workbook()
@@ -255,27 +280,31 @@ class CapturaPresencaVideo(App):
         sheet.cell(row=1, column=2, value="Matricula")
         sheet.cell(row=1, column=3, value="Status")
 
-        # Diretório de imagens das pessoas registradas
-        people_dir = "Alunos"
+        # Diretório de imagens das pessoas registradas (subpasta de disciplina)
+        people_dir = os.path.join("Alunos", disciplina)
 
         # Carregar imagens das pessoas registradas
         self.known_faces, self.known_names = self.load_known_faces(people_dir)
 
         # Define todas as pessoas como "AUSENTE" inicialmente para preenchimento
-        all_people = [os.path.splitext(filename)[0] for filename in os.listdir(people_dir)]
+        all_people = [os.path.splitext(filename)[0] for filename in os.listdir(people_dir) if filename.endswith(".png")]
         row_index = 2
 
         for person in all_people:
-            person = person.replace(".png", "")
+            # Dividindo o nome do arquivo: Ignorar a parte da disciplina
             nome_matricula = person.split("_")
-            nome = nome_matricula[0]
-            matricula = nome_matricula[1]
-            status = "AUSENTE"  # Definindo todas as pessoas
+            if len(nome_matricula) >= 3:  # Verifica se a parte do nome e matrícula estão presentes
+                nome = nome_matricula[1]  # Ignora a parte da disciplina
+                matricula = nome_matricula[2]  # Parte da matrícula
+                status = "AUSENTE"  # Definindo todas as pessoas como ausentes inicialmente
 
-            sheet.cell(row=row_index, column=1, value=nome)
-            sheet.cell(row=row_index, column=2, value=matricula)
-            sheet.cell(row=row_index, column=3, value=status)
-            row_index += 1
+                sheet.cell(row=row_index, column=1, value=nome)
+                sheet.cell(row=row_index, column=2, value=matricula)
+                sheet.cell(row=row_index, column=3, value=status)
+                row_index += 1
+            else:
+                print(
+                    f"Erro no formato do arquivo de imagem: {person}. O formato esperado é 'Disciplina_Nome_Matricula.png'.")
 
         # Salvando o arquivo Excel no diretório designado
         app_root_dir = os.path.dirname(os.path.abspath(__file__))
@@ -289,13 +318,17 @@ class CapturaPresencaVideo(App):
         known_faces = []
         known_names = []
 
-        for filename in os.listdir(people_dir):
-            if filename.endswith(".png"):
-                path = os.path.join(people_dir, filename)
-                image = face_recognition.load_image_file(path)
-                encoding = face_recognition.face_encodings(image)[0]
-                known_faces.append(encoding)
-                known_names.append(os.path.splitext(filename)[0])
+        # Verificando se a pasta existe
+        if os.path.exists(people_dir):
+            for filename in os.listdir(people_dir):
+                if filename.endswith(".png"):
+                    path = os.path.join(people_dir, filename)
+                    image = face_recognition.load_image_file(path)
+                    encoding = face_recognition.face_encodings(image)[0]
+                    known_faces.append(encoding)
+                    known_names.append(os.path.splitext(filename)[0])
+        else:
+            print(f"Pasta de disciplina não encontrada: {people_dir}")
 
         return known_faces, known_names
 
