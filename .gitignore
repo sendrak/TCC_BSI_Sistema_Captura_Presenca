@@ -2,3 +2,19 @@
 *.xlsx
 Alunos/**/*.png
 CapturasDeTurma/*.png
+
+# Ignorar configurações do PyCharm
+.idea/
+.idea/workspace.xml
+
+# Ignorar cache do Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignorar arquivos temporários do sistema
+*.log
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
