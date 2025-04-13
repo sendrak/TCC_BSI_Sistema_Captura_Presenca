@@ -20,7 +20,7 @@ class MainMenu(BoxLayout):
 
         # Botões de monitoramento (Trabalho Futuro)
         button_monitoramento = Button(text="Monitoramento Multicâmeras(Trabalho Futuro)", size=(200, 50))
-        # button_monitoramento.bind(on_release=self.open_monitoramento)
+        button_monitoramento.bind(on_release=self.open_monitoramento)
 
         button_submete_presenca = Button(text="Submeter Presença para IFF Acadêmico(Trabalho Futuro)")
         button_submete_presenca.bind(on_release=self.open_submete_presenca)
@@ -69,6 +69,16 @@ class MainMenu(BoxLayout):
 
         # Adicionando o BoxLayout com a imagem e os botões ao MainMenu
         self.add_widget(container_central)
+
+    def open_monitoramento(self, instance):
+        try:
+            current_directory = os.path.dirname(os.path.abspath(__file__))
+            app_path = os.path.join(current_directory, 'modulo_multicameras.py')
+            print("Abrindo:", app_path)
+            process = subprocess.Popen(['python', app_path])
+            self.processes.append(process)  # Adiciona o subprocesso à lista de apps abertos
+        except Exception as e:
+            print(f"Erro ao abrir a aplicação: {e}")
 
     def open_cadastro(self, instance):
         try:
