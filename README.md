@@ -8,14 +8,18 @@ Segue abaixo um tutorial de como instalar as bibliotecas para funcionamento do s
 
 Step-by-Step para a instalação dos módulos necessários para rodar os códigos
 
-Instalar Python 3, versão 3.8: https://www.python.org/ **CMD executado na pasta do projeto, necessário para o arquivo DLIB ser encontrado
+Instalar Python 3, versão 3.8: https://www.python.org/ *
+*CMD executado na pasta do projeto, necessário para o arquivo DLIB ser encontrado
 
 Versão utilizada: python --version 3.8.10
 
 CMAKE: pip install cmake
 
-DLIB: pip install dlib-19.19.0-cp38-cp38-win_amd64.whl
+DLIB Python 3.8*: pip install dlib-19.19.0-cp38-cp38-win_amd64.whl
 *Com o CMD aberto na pasta onde o arquivo está presente(Configuracoes)
+
+Caso esteja utilizando outras versões do Python o dlib deve ser instalado de acordo*:
+*O Processo de Instalação pode ser diferente neste caso
 
 Face Recognition: pip install face_recognition
 
@@ -31,3 +35,4 @@ pip install pandas
 
 Documentações consultadas:
 kivy: https://kivy.org/doc/stable-1.10.1/installation/installation-windows.html
+Dlib: https://pypi.org/project/dlib-bin/#files
