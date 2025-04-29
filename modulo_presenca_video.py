@@ -33,23 +33,18 @@ class CapturaPresencaVideo(App):
         except FileNotFoundError:
             pass
 
-        # Layout principal com duas colunas
         layout = BoxLayout(orientation='horizontal', spacing=10)
 
-        # Coluna 1: Visualização da câmera e captura
         col1_layout = BoxLayout(orientation='vertical', spacing=10)
 
-        # Adicionando 'no_camera' como imagem padrão
         self.camera = Image(source='Imagens/no_camera.png', allow_stretch=True)
         col1_layout.add_widget(self.camera)
 
-        # Temporizador
         self.timer_label = Label(text="Tempo restante: 10:00")
         col1_layout.add_widget(self.timer_label)
 
         layout.add_widget(col1_layout)
 
-        # Coluna 2: Campos de texto e botões
         col2_layout = BoxLayout(orientation='vertical', spacing=10)
 
         label_date = Label(text='Data:')
@@ -61,34 +56,23 @@ class CapturaPresencaVideo(App):
 
         text_input1 = TextInput(hint_text='Curso', text=select_curso)
 
-        # ----------- Dropdown Seleção de Disciplina
-
-        # Inicializando o TextInput para a Disciplina
         self.disciplina_input = TextInput(size_hint_y=None, height='48dp', hint_text='Selecione a Disciplina',
                                           readonly=True)
-        # Dropdown de seleção de disciplina, lista criada a partir das pastas dentro de "Alunos"
         helper = helper_busca_disciplinas()
         lista_disciplinas = helper.lista_de_disciplinas_cadastradas()
         dropdown = DropDown()
 
-        # Criação do botão no DropDown com base na lista de disciplinas - Não foi possível reutilizar a função
         for disciplina in lista_disciplinas:
             btn = Button(text=disciplina, size_hint_y=None, height=44)
-            # Ajuste aqui para garantir que a disciplina seja atribuída no text_input2
             btn.bind(on_release=lambda btn: (setattr(self, 'select_disciplina', btn.text),
                                              setattr(self.disciplina_input, 'text', btn.text),
                                              dropdown.dismiss()))
-
-
-
             dropdown.add_widget(btn)
 
-        # Associar o DropDown ao TextInput
         self.disciplina_input.bind(
             on_touch_down=lambda instance, touch: dropdown.open(self.disciplina_input) if instance.collide_point(
                 *touch.pos) else None)
 
-        # Adiciona o TextInput ao layout
         col2_layout.add_widget(label_date)
         col2_layout.add_widget(date_input)
         col2_layout.add_widget(label_text_input1)
@@ -96,11 +80,8 @@ class CapturaPresencaVideo(App):
         col2_layout.add_widget(label_text_input2)
         col2_layout.add_widget(self.disciplina_input)
 
-        # ----------- Fim do Dropdown Seleção de Disciplina
-
-        # Campo para definir o tempo do temporizador
         self.timer_input = TextInput(hint_text='Tempo (segundos)', input_filter='int')
-        self.timer_input.text = '600'  # Valor padrão: 10 minutos em segundos
+        self.timer_input.text = '600'
         label_timer_input = Label(text='Defina o tempo de captura em segundos:')
         col2_layout.add_widget(label_timer_input)
         col2_layout.add_widget(self.timer_input)
@@ -121,11 +102,11 @@ class CapturaPresencaVideo(App):
         self.known_names = []
         self.detected_people = {}
         self.timer = None
-        self.remaining_time = 600  # 10 minutos em segundos
-        self.mostrar_popup = True  # Atributo para rastrear se o popup foi mostrado
-        self.is_capturing = False  # Atributo para controlar a captura em andamento
+        self.remaining_time = 600
+        self.mostrar_popup = True
+        self.is_capturing = False
 
-        Clock.schedule_interval(self.update, 0 / 30.0)  # Mais próximo de zero aumenta a taxa de atualização
+        Clock.schedule_interval(self.update, 0 / 30.0)
 
         self.date_input = date_input
         self.text_input1 = text_input1
@@ -139,14 +120,13 @@ class CapturaPresencaVideo(App):
             print("O tempo deve ser um valor inteiro maior que zero")
             return
 
-        # Verificar se a câmera foi aberta com sucesso
         if not self.capture.isOpened():
             print("Erro ao abrir a câmera.")
             return
 
         if not self.is_capturing:
             self.is_capturing = True
-            self.mostrar_popup = True  # Redefinir o popup mostrado
+            self.mostrar_popup = True
 
             self.remaining_time = user_time_input
             self.timer_label.text = f"Tempo restante: {user_time_input // 60:02}:{user_time_input % 60:02}"
@@ -154,24 +134,23 @@ class CapturaPresencaVideo(App):
             if self.timer is None:
                 self.timer = Clock.schedule_interval(self.update_timer, 1)
 
-            # Verifica se o arquivo Excel já existe
             data = self.date_input.text
             curso = self.text_input1.text
-            disciplina = self.select_disciplina  # Usando o valor da disciplina selecionada
+            disciplina = self.select_disciplina
             filename = f"{curso}_{disciplina}_{data}.xlsx"
             file_path = os.path.join("PresencasCapturadas", filename)
 
+            people_dir = os.path.join("Alunos", disciplina)
+            self.known_faces, self.known_names = self.load_known_faces(people_dir)
+
             if not os.path.exists(file_path):
-                # Se o arquivo não existe, cria e preenche
                 self.cria_excel(None)
             else:
-                # Se o arquivo existe, apenas inicia a captura
                 print("Captura de presença iniciada, a captura será finalizada ao fim do temporizador")
 
     def stop_capturing(self):
         self.is_capturing = False
         self.capture.release()
-        # Exibe a imagem 'no_camera' ao finalizar a captura
         self.camera.source = 'Imagens/no_camera.png'
 
     def update(self, dt):
@@ -193,6 +172,7 @@ class CapturaPresencaVideo(App):
                             self.montagem_presenca(person_name)
                         cv2.rectangle(frame, (left, top), (right, bottom), (0, 255, 0), 2)
                     else:
+                        print("Face não reconhecida detectada na câmera.")
                         cv2.rectangle(frame, (left, top), (right, bottom), (0, 0, 255), 2)
 
                 exited_people = set(self.detected_people.keys()) - newly_detected_people
@@ -227,13 +207,11 @@ class CapturaPresencaVideo(App):
         elif self.mostrar_popup is True:
             self.timer_label.text = "Tempo esgotado, presença finalizada"
             self.popup_finaliza_tempo()
-            self.stop_capturing()  # Pare a captura quando o tempo se esgotar
-
-            # Adicione a chamada para a função de atualização do Excel aqui
+            self.stop_capturing()
             self.atualiza_excel()
 
     def popup_finaliza_tempo(self):
-        self.mostrar_popup = False  # Marcar o popup como mostrado para evitar múltiplas chamadas
+        self.mostrar_popup = False
         message = "Tempo esgotado, presença finalizada"
 
         box_popup = BoxLayout(orientation='vertical')
@@ -249,57 +227,51 @@ class CapturaPresencaVideo(App):
     def atualiza_excel(self):
         print("Função de atualização do Excel chamada")
 
-        # Diretório do arquivo Excel
         data = self.date_input.text
         curso = self.text_input1.text
-        disciplina = self.select_disciplina  # Usando a disciplina atual
+        disciplina = self.select_disciplina
         filename = f"{curso}_{disciplina}_{data}.xlsx"
         file_path = os.path.join("PresencasCapturadas", filename)
 
-        # Carrega o arquivo Excel existente
         workbook = load_workbook(file_path)
         sheet = workbook.active
 
-        # Preenche 'PRESENTE' para as pessoas encontradas durante a captura
-        for nome in self.lista_presenca:
-            if nome in self.known_names:
-                row_index = self.known_names.index(nome) + 2
-                sheet.cell(row=row_index, column=3, value="PRESENTE")
+        for nome_matricula in self.lista_presenca:
+            for i, known_name in enumerate(self.known_names):
+                if known_name == nome_matricula:
+                    row_index = i + 2
+                    sheet.cell(row=row_index, column=3, value="PRESENTE")
+                    break
 
-        # Salva as alterações no arquivo Excel
         workbook.save(file_path)
+
 
     def cria_excel(self, instance):
         data = self.date_input.text
         curso = self.text_input1.text
-        disciplina = self.select_disciplina  # Usando a disciplina selecionada
+        disciplina = self.select_disciplina
         filename = f"{curso}_{disciplina}_{data}.xlsx"
 
         workbook = Workbook()
         sheet = workbook.active
 
-        # Criação das Colunas
         sheet.cell(row=1, column=1, value="Aluno")
         sheet.cell(row=1, column=2, value="Matricula")
         sheet.cell(row=1, column=3, value="Status")
 
-        # Diretório de imagens das pessoas registradas (subpasta de disciplina)
         people_dir = os.path.join("Alunos", disciplina)
 
-        # Carregar imagens das pessoas registradas
         self.known_faces, self.known_names = self.load_known_faces(people_dir)
 
-        # Define todas as pessoas como "AUSENTE" inicialmente para preenchimento
         all_people = [os.path.splitext(filename)[0] for filename in os.listdir(people_dir) if filename.endswith(".png")]
         row_index = 2
 
         for person in all_people:
-            # Dividindo o nome do arquivo: Ignorar a parte da disciplina
             nome_matricula = person.split("_")
-            if len(nome_matricula) >= 3:  # Verifica se a parte do nome e matrícula estão presentes
-                nome = nome_matricula[1]  # Ignora a parte da disciplina
-                matricula = nome_matricula[2]  # Parte da matrícula
-                status = "AUSENTE"  # Definindo todas as pessoas como ausentes inicialmente
+            if len(nome_matricula) >= 3:
+                nome = nome_matricula[1]
+                matricula = nome_matricula[2]
+                status = "AUSENTE"
 
                 sheet.cell(row=row_index, column=1, value=nome)
                 sheet.cell(row=row_index, column=2, value=matricula)
@@ -309,10 +281,9 @@ class CapturaPresencaVideo(App):
                 print(
                     f"Erro no formato do arquivo de imagem: {person}. O formato esperado é 'Disciplina_Nome_Matricula.png'.")
 
-        # Salvando o arquivo Excel no diretório designado
         app_root_dir = os.path.dirname(os.path.abspath(__file__))
         save_dir = os.path.join(app_root_dir, "PresencasCapturadas")
-        os.makedirs(save_dir, exist_ok=True)  # Crie o diretório se ele não existir
+        os.makedirs(save_dir, exist_ok=True)
 
         file_path = os.path.join(save_dir, filename)
         workbook.save(file_path)
@@ -321,15 +292,18 @@ class CapturaPresencaVideo(App):
         known_faces = []
         known_names = []
 
-        # Verificando se a pasta existe
         if os.path.exists(people_dir):
             for filename in os.listdir(people_dir):
                 if filename.endswith(".png"):
                     path = os.path.join(people_dir, filename)
                     image = face_recognition.load_image_file(path)
-                    encoding = face_recognition.face_encodings(image)[0]
-                    known_faces.append(encoding)
-                    known_names.append(os.path.splitext(filename)[0])
+                    encodings = face_recognition.face_encodings(image)
+                    if encodings:
+                        encoding = encodings[0]
+                        known_faces.append(encoding)
+                        known_names.append(os.path.splitext(filename)[0])
+                    else:
+                        print(f"Nenhuma face encontrada em {filename}")
         else:
             print(f"Pasta de disciplina não encontrada: {people_dir}")
 
