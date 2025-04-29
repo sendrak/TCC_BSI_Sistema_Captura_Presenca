@@ -39,7 +39,7 @@ class MainMenu(BoxLayout):
         button_banco_de_dados.bind(on_release=self.open_database)
         container_central.add_widget(button_banco_de_dados)
 
-        button_captura_video = Button(text="Captura de Presença Por Vídeo em Tempo Real", size=(200, 50))
+        button_captura_video = Button(text="Gerar de Presença Por Vídeo em Tempo Real", size=(200, 50))
         button_captura_video.bind(on_release=self.open_captura_video)
         container_central.add_widget(button_captura_video)
 
@@ -49,7 +49,7 @@ class MainMenu(BoxLayout):
         button_captura_imagem_turma.bind(on_release=self.open_captura_imagem_turma)
         container_presenca_imagem.add_widget(button_captura_imagem_turma)
 
-        button_captura_imagem = Button(text="Captura Presença por Imagem da Turma", size=(200, 50))
+        button_captura_imagem = Button(text="Gerar Presença por Imagem da Turma", size=(200, 50))
         button_captura_imagem.bind(on_release=self.open_captura_imagem)
         container_presenca_imagem.add_widget(button_captura_imagem)
 
