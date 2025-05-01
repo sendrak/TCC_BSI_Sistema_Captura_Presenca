@@ -1,17 +1,18 @@
 import json
-
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.togglebutton import ToggleButton
-from kivy.uix.textinput import TextInput
 from kivy.uix.button import Button
 from kivy.uix.popup import Popup
 from kivy.uix.label import Label
 from kivy.uix.image import Image
 from kivy.core.window import Window
 from kivy.uix.camera import Camera
+from kivy.uix.dropdown import DropDown
 import os
 from datetime import datetime
+from kivy.uix.textinput import TextInput
+from helper_funcoes_reutilizadas import helper_busca_disciplinas
 
 
 class ConteudoCadastroPessoas(BoxLayout):
@@ -23,20 +24,24 @@ class ConteudoCadastroPessoas(BoxLayout):
                 config = json.load(config_file)
                 select_cam = config.get("select_cam", "")
                 select_matricula = config.get("select_matricula", "")
-                select_disciplina = config.get("select_disciplina", "")
+                # self.select_disciplina = config.get("select_disciplina", "")  # ← Comentado conforme solicitado
+                self.select_disciplina = "" 
                 select_curso = config.get("select_curso", "")
         except FileNotFoundError:
-            pass
+            select_cam = 0
+            self.select_disciplina = ""
+            select_curso = ""
 
         self.orientation = 'horizontal'
 
-        # Adicionando camera e botões a tela
+        # Esquerda - Câmera
         self.container_esquerda = BoxLayout(orientation='vertical', padding=5, spacing=5)
         self.camera = Camera(resolution=(640, 480), play=True)
         self.camera.index = select_cam
         self.container_esquerda.add_widget(self.camera)
         self.add_widget(self.container_esquerda)
 
+        # Direita - Inputs
         self.container_direita = BoxLayout(orientation='vertical', padding=5, spacing=5)
 
         self.toggle_button = ToggleButton(text='Pause / Play', size_hint_y=None, height='48dp')
@@ -46,14 +51,32 @@ class ConteudoCadastroPessoas(BoxLayout):
         self.curso_input = TextInput(size_hint_y=None, height='48dp', hint_text='Curso', text=select_curso)
         self.container_direita.add_widget(self.curso_input)
 
-        self.disciplina_input = TextInput(size_hint_y=None, height='48dp', hint_text='Curso', text=select_disciplina)
-        self.container_direita.add_widget(self.disciplina_input)
+        # DropDown (Picklist) para disciplina
+        self.disciplina_button = TextInput(size_hint_y=None, height='48dp', hint_text='Selecione a Disciplina',
+                                     readonly=True)
 
-        # Pega a data de hoje
+        helper = helper_busca_disciplinas()
+        lista_disciplinas = helper.lista_de_disciplinas_cadastradas()
+        dropdown = DropDown()
+
+        for disciplina in lista_disciplinas:
+            btn = Button(text=disciplina, size_hint_y=None, height=44)
+            btn.bind(on_release=lambda btn: (setattr(self, 'select_disciplina', btn.text),
+                                             setattr(self.disciplina_button, 'text', btn.text),
+                                             dropdown.dismiss()))
+            dropdown.add_widget(btn)
+
+        self.disciplina_button.bind(
+            on_touch_down=lambda instance, touch: dropdown.open(self.disciplina_button) if instance.collide_point(
+                *touch.pos) else None)
+        self.container_direita.add_widget(self.disciplina_button)
+
+        # Data
         data_atual = datetime.now().strftime('%Y-%m-%d')
         self.data_input = TextInput(size_hint_y=None, height='48dp', hint_text='Data', text=data_atual)
         self.container_direita.add_widget(self.data_input)
 
+        # Botões
         self.capturar_button = Button(text='Capturar', size_hint_y=None, height='48dp')
         self.capturar_button.bind(on_press=self.capture)
         self.container_direita.add_widget(self.capturar_button)
@@ -64,21 +87,24 @@ class ConteudoCadastroPessoas(BoxLayout):
 
         self.add_widget(self.container_direita)
 
-        self.caminho_salvar = "./CapturasDeTurma"  # Local de salvamento das imagens
+        self.caminho_salvar = "./CapturasDeTurma"
+        if not os.path.exists(self.caminho_salvar):
+            os.makedirs(self.caminho_salvar)
 
     def alternar_camera(self, instance):
         self.camera.play = not self.camera.play
 
     def capture(self, instance):
         curso = self.curso_input.text.strip()
-        disciplina = self.disciplina_input.text.strip()
+        disciplina = getattr(self, 'select_disciplina', '')
         data = self.data_input.text.strip()
-        if not curso or not data:
-            print("Por favor, preencha o nome e a matrícula da pessoa antes de capturar.")
+
+        if not curso or not data or not disciplina:
+            print("Por favor, preencha todos os campos antes de capturar.")
             return
 
         filename = os.path.join(self.caminho_salvar, f"{curso}_{disciplina}_{data}.png")
-        self.camera.export_to_png(filename)  # Alterado para usar a câmera do self
+        self.camera.export_to_png(filename)
         self.show_capture_popup(filename)
 
     def show_capture_popup(self, filename):
@@ -86,6 +112,7 @@ class ConteudoCadastroPessoas(BoxLayout):
         popup_content = BoxLayout(orientation='vertical')
         popup_content.add_widget(image)
         popup_content.add_widget(Label(text=f'O arquivo foi salvo como:\n{filename}'))
+
         buttons_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height='48dp')
         nova_captura_button = Button(text='Nova Captura', size_hint_x=1)
         nova_captura_button.bind(on_press=self.dismiss_popup)
@@ -114,9 +141,7 @@ class CadastroDePessoasApp(App):
         Window.maximize()
         self.title = 'Instituto Federal Fluminense - Captura de Imagem da Turma'
         self.icon = 'Imagens/icone_camera.png'
-
         return ConteudoCadastroPessoas()
-
 
 
 if __name__ == '__main__':

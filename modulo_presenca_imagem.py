@@ -48,6 +48,7 @@ class CapturaPresencaImagem(App):
         self.date_input = TextInput(hint_text='Data', text=data_de_hoje)
         self.text_input1 = TextInput(hint_text='Curso', text=select_curso)
 
+        # DropDown (Picklist) para disciplina
         self.text_input2 = TextInput(size_hint_y=None, height='48dp', hint_text='Selecione a Disciplina',
                                      readonly=True)
 
