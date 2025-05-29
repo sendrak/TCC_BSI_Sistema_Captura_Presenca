@@ -22,7 +22,7 @@ class ConteudoCadastroPessoas(BoxLayout):
         try:
             with open("Configuracoes/config.txt", "r") as config_file:
                 config = json.load(config_file)
-                select_cam = config.get("select_cam", "")
+                select_cam = int(config.get("select_cam", 0)) # Esta linha teve que ser atualizada pois estava recebendo como string
                 # select_matricula = config.get("select_matricula", "")
                 select_disciplina = config.get("select_disciplina", "")
                 # select_curso = config.get("select_curso", "")

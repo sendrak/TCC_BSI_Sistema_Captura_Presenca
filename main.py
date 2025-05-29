@@ -67,7 +67,7 @@ class MainMenu(BoxLayout):
 
         container_central.add_widget(container_config_fechar)
 
-        # Adicionando o BoxLayout com a imagem e os botões ao MainMenu
+        # BoxLayout com a imagem e os botões ao MainMenu
         self.add_widget(container_central)
 
     def open_monitoramento(self, instance):

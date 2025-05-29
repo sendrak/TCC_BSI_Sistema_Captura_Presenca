@@ -15,16 +15,16 @@ from kivy.uix.textinput import TextInput
 from helper_funcoes_reutilizadas import helper_busca_disciplinas
 
 
-class ConteudoCadastroPessoas(BoxLayout):
+class ConteudoCapturaTurma(BoxLayout):
     def __init__(self, **kwargs):
-        super(ConteudoCadastroPessoas, self).__init__(**kwargs)
+        super(ConteudoCapturaTurma, self).__init__(**kwargs)
 
         try:
             with open("Configuracoes/config.txt", "r") as config_file:
                 config = json.load(config_file)
-                select_cam = config.get("select_cam", "")
+                select_cam = int(config.get("select_cam", 0))
                 select_matricula = config.get("select_matricula", "")
-                # self.select_disciplina = config.get("select_disciplina", "")  # ← Comentado conforme solicitado
+                # self.select_disciplina = config.get("select_disciplina", "") 
                 self.select_disciplina = "" 
                 select_curso = config.get("select_curso", "")
         except FileNotFoundError:
@@ -136,13 +136,13 @@ class ConteudoCadastroPessoas(BoxLayout):
         App.get_running_app().stop()
 
 
-class CadastroDePessoasApp(App):
+class CapturaTurmaApp(App):
     def build(self):
         Window.maximize()
         self.title = 'Instituto Federal Fluminense - Captura de Imagem da Turma'
         self.icon = 'Imagens/icone_camera.png'
-        return ConteudoCadastroPessoas()
+        return ConteudoCapturaTurma()
 
 
 if __name__ == '__main__':
-    CadastroDePessoasApp().run()
+    CapturaTurmaApp().run()

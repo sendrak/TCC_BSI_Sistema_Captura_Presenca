@@ -26,9 +26,9 @@ class CapturaPresencaVideo(App):
         try:
             with open("Configuracoes/config.txt", "r") as config_file:
                 config = json.load(config_file)
-                select_cam = config.get("select_cam", "")
-                select_matricula = config.get("select_matricula", "")
-                select_disciplina = config.get("select_disciplina", "")
+                select_cam = int(config.get("select_cam", 0))
+                # select_matricula = config.get("select_matricula", "")
+                # select_disciplina = config.get("select_disciplina", "")
                 select_curso = config.get("select_curso", "")
         except FileNotFoundError:
             pass
@@ -97,7 +97,8 @@ class CapturaPresencaVideo(App):
 
         layout.add_widget(col2_layout)
 
-        self.capture = cv2.VideoCapture(0)
+        self.capture = cv2.VideoCapture(select_cam)
+
         self.known_faces = []
         self.known_names = []
         self.detected_people = {}
