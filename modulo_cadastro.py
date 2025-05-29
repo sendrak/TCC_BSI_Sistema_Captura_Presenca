@@ -22,7 +22,7 @@ class ConteudoCadastroPessoas(BoxLayout):
         try:
             with open("Configuracoes/config.txt", "r") as config_file:
                 config = json.load(config_file)
-                select_cam = int(config.get("select_cam", 0)) # Esta linha teve que ser atualizada pois estava recebendo como string
+                select_cam = int(config.get("select_cam", 0)) # Esta linha teve que ser atualizada pois estava recebendo como string das configs
                 # select_matricula = config.get("select_matricula", "")
                 select_disciplina = config.get("select_disciplina", "")
                 # select_curso = config.get("select_curso", "")
@@ -43,7 +43,7 @@ class ConteudoCadastroPessoas(BoxLayout):
         self.toggle_button.bind(on_press=self.alternar_camera)
         self.container_direita.add_widget(self.toggle_button)
 
-        #Caixa de Texto Disciplina, vem carregada com o valor das configurações
+        # Caixa de Texto Disciplina, vem carregada com o valor das configurações
         self.disciplina_input = TextInput(size_hint_y=None, height='48dp', hint_text='Disciplina', text=select_disciplina)
         self.container_direita.add_widget(self.disciplina_input)
 
@@ -64,10 +64,6 @@ class ConteudoCadastroPessoas(BoxLayout):
         self.container_direita.add_widget(self.fechar_button)
 
         self.add_widget(self.container_direita)
-
-        # Local de salvamento das imagens - Por Disciplina
-
-
 
     def alternar_camera(self, instance):
         self.camera.play = not self.camera.play
