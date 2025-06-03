@@ -1,0 +1,40 @@
+# Lista de Pacotes Python e versões instaladas
+# Com exceção do Dlib e Python os demais pacotes podem ser completamente atualizados
+# A versão do Dlib necessária está presente na pasta Configurações
+
+Python==3.8.10
+
+# Ao executar a lista de instação presente no readme.md os pacotes abaixo serão instalados automaticamente
+
+certifi==2025.1.31
+charset-normalizer==3.4.1
+click==8.1.8
+cmake==4.0.0
+colorama==0.4.6
+dlib @ TCC_BSI_Sistema_Captura_Presenca/Configuracoes/dlib-19.19.0-cp38-cp38-win_amd64.whl
+docutils==0.20.1
+et_xmlfile==2.0.0
+face-recognition==1.3.0
+face_recognition_models==0.3.0
+filetype==1.2.0
+idna==3.10
+Kivy==2.3.1
+kivy-deps.angle==0.4.0
+kivy-deps.glew==0.3.1
+Kivy-Garden==0.1.5
+kivy_deps.sdl2==0.8.0
+kivymd==1.2.0
+numpy==1.24.4
+opencv-python==4.11.0.86
+openpyxl==3.1.5
+pandas==2.0.3
+pillow==10.4.0
+Pygments==2.19.1
+pypiwin32==223
+python-dateutil==2.9.0.post0
+pytz==2025.2
+pywin32==310
+requests==2.32.3
+six==1.17.0
+tzdata==2025.2
+urllib3==2.2.3

@@ -19,25 +19,28 @@ class ConfigScreen(BoxLayout):
         image = Image(source="Imagens/logo_iff_campus_centro.png")
         self.add_widget(image)
 
+        self.informacoes_label = Label(text="**As informações definidas aqui são pré carregadas nas telas do sistema.**", size_hint_y=None, height=30)
+        self.add_widget(self.informacoes_label)
+
         # Label e campos de entrada para os parâmetros
-        self.select_cam_label = Label(text="Selecione a Camera (Padrão Windows = 0):", size_hint_y=None, height=30)
+        self.select_cam_label = Label(text="Selecione a Camera que será utilizada (Padrão Windows = 0 / A câmera de um notebook será sempre a 0):", size_hint_y=None, height=30)
         self.select_cam_input = TextInput(size_hint_y=None, height=30)
         self.add_widget(self.select_cam_label)
         self.add_widget(self.select_cam_input)
 
         # Novo Label e TextInput para a Matrícula
-        self.select_matricula_label = Label(text="Informe a Matrícula de Professor Padrão: (Trabalho Futuro)", size_hint_y=None, height=30)
+        self.select_matricula_label = Label(text="Informe a Matrícula de Professor:", size_hint_y=None, height=30)
         self.select_matricula_input = TextInput(size_hint_y=None, height=30)
         self.add_widget(self.select_matricula_label)
         self.add_widget(self.select_matricula_input)
 
         # O label Disciplina foi reativado para evitar erro no salvamento
-        self.select_disciplina_label = Label(text="Informe a Disciplina Padrão:", size_hint_y=None, height=30)
+        self.select_disciplina_label = Label(text="Informe a Disciplina:", size_hint_y=None, height=30)
         self.select_disciplina_input = TextInput(size_hint_y=None, height=30)
         self.add_widget(self.select_disciplina_label)
         self.add_widget(self.select_disciplina_input)
 
-        self.select_curso_label = Label(text="Informe o Curso Padrão: (Trabalho Futuro)", size_hint_y=None, height=30)
+        self.select_curso_label = Label(text="Informe o Curso: ", size_hint_y=None, height=30)
         self.select_curso_input = TextInput(size_hint_y=None, height=30)
         self.add_widget(self.select_curso_label)
         self.add_widget(self.select_curso_input)
@@ -77,13 +80,13 @@ class ConfigScreen(BoxLayout):
 
         # Mensagem com novos valores
         message = f"Configurações Padrão Alteradas:\n\n" \
-                  f"Selecione a Camera: {config['select_cam']}\n" \
-                  f"Informe a Matrícula Padrão: {config['select_matricula']}\n" \
-                  f"Informe a Disciplina Padrão: {config['select_disciplina']}\n" \
-                  f"Informe o Curso Padrão: {config['select_curso']}"
+                  f"Index da Camera: {config['select_cam']}\n" \
+                  f"Matrícula do Professor: {config['select_matricula']}\n" \
+                  f"Disciplina: {config['select_disciplina']}\n" \
+                  f"Curso: {config['select_curso']}"
 
         # Abra uma popup de confirmação com os novos valores
-        popup = Popup(title="Configurações Alteradas", size_hint=(0.7, 0.7))
+        popup = Popup(title="Salvamento de Configurações", size_hint=(0.7, 0.7))
 
         # BoxLayout para organizar os widgets dentro da popup
         popup_content = BoxLayout(orientation='vertical')

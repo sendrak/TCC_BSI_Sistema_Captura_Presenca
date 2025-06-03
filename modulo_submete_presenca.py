@@ -22,6 +22,9 @@ class SubmetePresenca(App):
         except FileNotFoundError:
             pass
 
+        select_diario = ''
+        select_ano = ''
+
         # Layout principal dividido em duas colunas horizontais
         layout = BoxLayout(orientation='horizontal', spacing=10)
 
@@ -53,6 +56,11 @@ class SubmetePresenca(App):
         label_disciplina = Label(text="Disciplina:")
         input_disciplina = TextInput(text=select_disciplina, password=False, multiline=False)
 
+        label_diario = Label(text="Diário:")
+        input_diario = TextInput(text=select_diario, password=False, multiline=False)
+        label_ano = Label(text="Ano Letivo:")
+        input_ano = TextInput(text=select_ano, password=False, multiline=False)
+
         right_column.add_widget(label_matricula)
         right_column.add_widget(input_matricula)
         right_column.add_widget(label_senha)
@@ -61,6 +69,10 @@ class SubmetePresenca(App):
         right_column.add_widget(input_curso)
         right_column.add_widget(label_disciplina)
         right_column.add_widget(input_disciplina)
+        right_column.add_widget(label_diario)
+        right_column.add_widget(input_diario)
+        right_column.add_widget(label_ano)
+        right_column.add_widget(input_ano)
 
         # Botão Submeter
         submit_button = Button(text="Submeter")
