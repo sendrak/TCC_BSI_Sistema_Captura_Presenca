@@ -1,4 +1,6 @@
 # TCC_BSI
+**O Projeto não será mais atualizado**
+Caso tenha interesse em acessar o TCC siga o link: https://bd.centro.iff.edu.br/jspui/handle/123456789/5118
 
 Este trabalho foi desenvolvido ao longo do ano de 2024 para contemplar a entrega final do Trabalho de Conclusão de Curso para o Bacharelado em Sistemas de Informação.
 
@@ -16,7 +18,8 @@ Versão utilizada: python --version 3.8.10
 CMAKE: pip install cmake
 
 DLIB Python 3.8*: pip install dlib-19.19.0-cp38-cp38-win_amd64.whl
-*Com o CMD aberto na pasta onde o arquivo está presente(Configuracoes)
+*Com o CMD/PowerShell aberto na pasta onde o arquivo está presente(Configuracoes)
+**A utilização de diferentes versões do python requer uma instação de dlib compatível.
 
 Caso esteja utilizando outras versões do Python o dlib deve ser instalado de acordo*:
 *O Processo de Instalação pode ser diferente neste caso
@@ -33,6 +36,6 @@ pip install openpyxl
 
 pip install pandas
 
-Documentações consultadas:
+Documentações:
 kivy: https://kivy.org/doc/stable-1.10.1/installation/installation-windows.html
 Dlib: https://pypi.org/project/dlib-bin/#files
